@@ -1,0 +1,32 @@
+shmup game
+
+-3 levels
+-3 - 4 different enemy types - maybe start with 2 in the first level, then add one in each level afterwards
+-defeat boss at the end to win
+-player dies if shot or collides with enemy
+-player can shoot enemies
+-player has a health bar
+-enemies could drop powerups
+  *this could also be a system similar to how powerups are done in gradius, where all powerup options are at the bottom, and you can choose which one to get by saving up points and using them when you have enough. if not enough time to do this, then maybe just have the enemy drop a random one
+
+---Player---
+-player can:
+  -move
+  -shoot
+  -collect/use powerups
+  -die
+
+---Enemy---
+-enemies can:
+  -move - follow a set path, sin waves, etc
+  -shoot
+  -drop powerups
+  -die - add to player score when dead
+
+---UI---
+-menu screens
+  -title screen - could have options to start game, quit game, game title
+  -tutorial screen - explains controls - arrow keys to move, z to shoot, esc to pause, etc
+  -pause screen
+  -win screen - displays player score, maybe other stuff like damage taken, deaths, enemies destroyed
+-player score and health shown during game on screen
