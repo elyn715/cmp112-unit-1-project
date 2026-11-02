@@ -1,0 +1,52 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class stage_manager : MonoBehaviour
+{
+    public bool has_tutorial = false;
+    public bool paused = false;
+    public GameObject pause_canvas;
+    
+    public GameObject stage_canvas;
+    
+    void Start()
+    {
+        pause_canvas = GetComponent<Canvas>().gameObject;
+        stage_canvas = GetComponent<Canvas>().gameObject;
+    }
+
+    void Update()
+    {
+        //Check for stage end - this will be done automatically later, so just using the old input system for now
+        if (Input.GetKeyDown(KeyCode.Return) && !paused)
+        {
+            //Move to next stage
+            int next_scene = SceneManager.GetActiveScene().buildIndex + 1;
+            if (next_scene >= SceneManager.sceneCountInBuildSettings)
+            {
+                next_scene = 0;
+            }
+            SceneManager.LoadScene(next_scene);
+        }
+    }
+
+    public void toggle_pause()
+    {
+        bool can_pause = true;
+        if (has_tutorial)
+        {
+            tutorial_manager tutorial = GetComponentInChildren<tutorial_manager>();
+            if (tutorial.tutorial_on)
+            {
+                can_pause = false;
+            }
+        }
+
+        if (can_pause)
+        {
+            paused = !paused;
+            pause_canvas.SetActive(paused);
+            stage_canvas.SetActive(!paused);
+        }
+    }
+}

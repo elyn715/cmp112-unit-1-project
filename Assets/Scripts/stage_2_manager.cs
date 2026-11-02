@@ -20,6 +20,7 @@ public class stage_2_manager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             //Pause
+            paused = true;
             pause_canvas.SetActive(true);
             stage_2_canvas.SetActive(false);
         }

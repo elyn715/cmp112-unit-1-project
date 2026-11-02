@@ -9,7 +9,7 @@ public class stage_1_manager : MonoBehaviour
     public bool paused = false;
     public GameObject pause_canvas;
     
-    private bool tutorial_on = true;
+    public bool tutorial_on = true;
     public GameObject tutorial_canvas;
 
     public GameObject stage_1_canvas;
@@ -32,12 +32,13 @@ public class stage_1_manager : MonoBehaviour
         }
         
         //Check for pausing
-        if (Input.GetKeyDown(KeyCode.Escape) && !tutorial_on)
+        /*if (Input.GetKeyDown(KeyCode.Escape) && !tutorial_on)
         {
             //Pause
+            paused = true;
             pause_canvas.SetActive(true);
             stage_1_canvas.SetActive(false);
-        }
+        }*/
         
         //Check for stage end
         if (Input.GetKeyDown(KeyCode.Return) && !tutorial_on && !paused)
