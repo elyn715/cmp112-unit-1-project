@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
+using UnityEngine.Rendering.Universal;
 
 public class player : MonoBehaviour
 {
@@ -12,7 +13,15 @@ public class player : MonoBehaviour
     public UnityEvent pause_event;
     public UnityEvent tutorial_event;
     private bool tutorial_on = true;
+    
+    private Vector2 start_pos;
 
+    void Start()
+    {
+        gameObject.GetComponentInChildren<SpriteRenderer>().enabled = false;
+        start_pos = transform.position;
+    }
+    
     void OnMove(InputValue movementvalue)
     {
         Vector2 movement_vector = movementvalue.Get<Vector2>();
@@ -27,6 +36,8 @@ public class player : MonoBehaviour
         {
             tutorial_event.Invoke();
             tutorial_on = false;
+            gameObject.GetComponentInChildren<SpriteRenderer>().enabled = true;
+            transform.position = start_pos;
         }
     }
 
