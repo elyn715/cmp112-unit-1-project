@@ -8,8 +8,6 @@ public class player : MonoBehaviour
     private float move_x;
     private float move_y;
     public float speed;
-    
-    public GameObject stage_manager;
 
     public UnityEvent pause_event;
     public UnityEvent tutorial_event;

@@ -138,7 +138,7 @@ PrefabInstance:
     - target: {fileID: 2911735164518380405, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
       propertyPath: stage_manager
       value: 
-      objectReference: {fileID: 973236744}
+      objectReference: {fileID: 0}
     - target: {fileID: 2911735164518380405, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
       propertyPath: pause_event.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -554,53 +554,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!1 &973236744
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 973236745}
-  - component: {fileID: 973236746}
-  m_Layer: 0
-  m_Name: stage_2_manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &973236745
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 973236744}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 320, y: 240, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &973236746
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 973236744}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7adb6a5ab60d7f243ab64842bbe0da46, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  paused: 0
-  pause_canvas: {fileID: 131506871}
-  stage_2_canvas: {fileID: 1181770356}
 --- !u!1 &981730896
 GameObject:
   m_ObjectHideFlags: 0
@@ -1223,7 +1176,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 715694506}
   - {fileID: 1181770361}
-  - {fileID: 973236745}
   - {fileID: 131506870}
   - {fileID: 1123043349}
   - {fileID: 1102267133}

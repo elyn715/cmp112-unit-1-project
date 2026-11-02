@@ -3,11 +3,6 @@ using UnityEngine.SceneManagement;
 
 public class win_screen_manager : MonoBehaviour
 {
-    void Start()
-    {
-        
-    }
-    
     void Update()
     {
         //Check for stage end
