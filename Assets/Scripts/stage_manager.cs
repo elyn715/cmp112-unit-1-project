@@ -26,6 +26,7 @@ public class stage_manager : MonoBehaviour
             {
                 next_scene = 0;
             }
+            
             SceneManager.LoadScene(next_scene);
         }
     }

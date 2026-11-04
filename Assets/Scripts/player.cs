@@ -1,24 +1,30 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.Events;
-using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 
 public class player : MonoBehaviour
 {
     private float move_x;
     private float move_y;
     public float speed;
+    public float LEFT_X_EDGE = -6.3f;
+    public float RIGHT_X_EDGE = 2.0f;
+    public float TOP_Y_EDGE = 4.3f;
+    public float BOTTOM_Y_EDGE = -4.3f;
 
     public UnityEvent pause_event;
     public UnityEvent tutorial_event;
-    private bool tutorial_on = true;
+    public bool tutorial_on = true;
     
     private Vector2 start_pos;
 
     void Start()
     {
-        gameObject.GetComponentInChildren<SpriteRenderer>().enabled = false;
+        if (SceneManager.GetActiveScene().buildIndex == 1)
+        {
+            gameObject.GetComponentInChildren<SpriteRenderer>().enabled = false;
+        }
         start_pos = transform.position;
     }
     
@@ -56,5 +62,13 @@ public class player : MonoBehaviour
     {
         Vector3 movement = new Vector2(move_x * speed * Time.deltaTime, move_y * speed * Time.deltaTime);
         transform.position += movement;
+        
+        //Check against boundaries
+        Vector3 boundary_fixed_pos = transform.position;
+        if(transform.position.x < LEFT_X_EDGE) boundary_fixed_pos.x = LEFT_X_EDGE;
+        else if(transform.position.x > RIGHT_X_EDGE) boundary_fixed_pos.x = RIGHT_X_EDGE;
+        if(transform.position.y > TOP_Y_EDGE) boundary_fixed_pos.y = TOP_Y_EDGE;
+        else if(transform.position.y < BOTTOM_Y_EDGE) boundary_fixed_pos.y = BOTTOM_Y_EDGE;
+        transform.position = boundary_fixed_pos;
     }
 }
