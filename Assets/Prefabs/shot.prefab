@@ -45,6 +45,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e66a2d22f453f174989b3c62d846fb7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  is_moving: 0
+  is_stopping: 0
+  last_static_pos: {x: 0, y: 0, z: 0}
+  last_player_movement: {x: 0, y: 0, z: 0}
+  initial_offset: {x: 0, y: 0, z: 0}
+  bullet: {fileID: 4780780327295781941, guid: 6178a7b87cd5fcd4f9f38dd788716967, type: 3}
+  bullet_offset: {x: 0.21, y: 1.84}
 --- !u!1 &8360793125627238339
 GameObject:
   m_ObjectHideFlags: 0

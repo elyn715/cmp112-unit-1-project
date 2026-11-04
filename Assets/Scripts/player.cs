@@ -36,6 +36,10 @@ public class player : MonoBehaviour
                 sprite.enabled = false;
             }
         }
+        else
+        {
+            tutorial_on = false;
+        }
         start_pos = transform.position;
     }
     
@@ -52,7 +56,7 @@ public class player : MonoBehaviour
         move_y = movement_vector.y;
     }
 
-    void OnShoot(InputValue movementvalue)
+    void OnShoot(InputValue value)
     {
         Debug.Log("shooting");
         if (tutorial_on)
@@ -65,15 +69,22 @@ public class player : MonoBehaviour
             }
             transform.position = start_pos;
         }
+        else
+        {
+            foreach (shot shot in shots)
+            {
+                shot.is_shooting = true;
+            }
+        }
     }
 
-    void OnPause(InputValue movementvalue)
+    void OnPause(InputValue value)
     {
         Debug.Log("pausing");
         pause_event.Invoke();
     }
 
-    void OnBomb(InputValue movementvalue)
+    void OnBomb(InputValue value)
     {
         Debug.Log("using bomb");
     }
