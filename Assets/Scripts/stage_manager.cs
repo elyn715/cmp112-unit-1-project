@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class stage_manager : MonoBehaviour
@@ -8,17 +9,10 @@ public class stage_manager : MonoBehaviour
     public GameObject pause_canvas;
     
     public GameObject stage_canvas;
-    
-    void Start()
-    {
-        pause_canvas = GetComponent<Canvas>().gameObject;
-        stage_canvas = GetComponent<Canvas>().gameObject;
-    }
 
     void Update()
     {
-        //Check for stage end - this will be done automatically later, so just using the old input system for now
-        if (Input.GetKeyDown(KeyCode.Return) && !paused)
+        if (Keyboard.current.enterKey.wasPressedThisFrame && !paused)
         {
             //Move to next stage
             int next_scene = SceneManager.GetActiveScene().buildIndex + 1;

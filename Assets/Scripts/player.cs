@@ -12,6 +12,7 @@ public class player : MonoBehaviour
     public float speed;
     private bool is_moving = false;
     private bool movement_start_pending = false;
+    public float shot_move_delay = 0.02f;
     public float LEFT_X_EDGE = -6.3f;
     public float RIGHT_X_EDGE = 2.0f;
     public float TOP_Y_EDGE = 4.3f;
@@ -58,7 +59,6 @@ public class player : MonoBehaviour
 
     void OnShoot(InputValue value)
     {
-        Debug.Log("shooting");
         if (tutorial_on)
         {
             tutorial_event.Invoke();
@@ -68,6 +68,10 @@ public class player : MonoBehaviour
                 sprite.enabled = true;
             }
             transform.position = start_pos;
+            foreach (shot shot in shots)
+            {
+                shot.reset_pos();
+            }
         }
         else
         {
@@ -80,7 +84,6 @@ public class player : MonoBehaviour
 
     void OnPause(InputValue value)
     {
-        Debug.Log("pausing");
         pause_event.Invoke();
     }
 
@@ -91,7 +94,7 @@ public class player : MonoBehaviour
 
     IEnumerator wait_to_move_shot()
     {
-        yield return new WaitForSeconds(0.02f);
+        yield return new WaitForSeconds(shot_move_delay);
         foreach (shot shot in shots)
         {
             shot.is_moving = true;
@@ -104,7 +107,7 @@ public class player : MonoBehaviour
         {
             shot.is_stopping = true;
         }
-        yield return new WaitForSeconds(0.02f);
+        yield return new WaitForSeconds(shot_move_delay);
         //Check if the player had started moving again before the delay ended
         foreach (shot shot in shots)
         {

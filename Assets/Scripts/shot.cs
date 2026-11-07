@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Serialization;
 
@@ -14,6 +15,9 @@ public class shot : MonoBehaviour
     public bullet bullet;
     public bool is_shooting = false;
 
+    public int shot_offset = 100;
+    private int offset_counter = 0;
+    
     void Start()
     {
         initial_offset = transform.position - transform.parent.position;
@@ -22,7 +26,6 @@ public class shot : MonoBehaviour
     
     public void move()
     {
-        Debug.Log(transform.position);
         if (is_stopping)
         {
             //Can move
@@ -38,16 +41,21 @@ public class shot : MonoBehaviour
     {
         Vector3 fixed_pos = transform.parent.position + initial_offset;
         transform.position = fixed_pos;
+        
     }
 
     void Update()
     {
-        //Will manage this with the new input system in next commit
-        if (is_shooting && Input.GetKey(KeyCode.Z))
+        if (!Keyboard.current.zKey.wasReleasedThisFrame && is_shooting)
         {
-            Vector3 new_pos = new Vector3(transform.position.x - 0.25f, transform.position.y - 0.55f, 0.0f);
-            Instantiate(bullet.gameObject, new_pos, transform.rotation);
+            if (shot_offset == offset_counter)
+            {
+                Vector3 new_pos = new Vector3(transform.position.x - 0.25f, transform.position.y - 0.55f, 0.0f);
+                Instantiate(bullet.gameObject, new_pos, transform.rotation);
+                offset_counter = 0;
+            }
+            else ++offset_counter;
         }
-        else if (Input.GetKeyUp(KeyCode.Z)) is_shooting = false;
+        else if (Keyboard.current.zKey.wasReleasedThisFrame) is_shooting = false;
     }
 }
