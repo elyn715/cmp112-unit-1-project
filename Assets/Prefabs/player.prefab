@@ -164,6 +164,9 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   tutorial_on: 1
+  start_pos: {x: 0, y: 0}
+  lives: 3
+  respawnTimer: 2500
 --- !u!1 &5178251785128584132
 GameObject:
   m_ObjectHideFlags: 0

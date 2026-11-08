@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using System.Threading;
 
 public class player : MonoBehaviour
 {
@@ -24,7 +25,12 @@ public class player : MonoBehaviour
     public UnityEvent tutorial_event;
     public bool tutorial_on = true;
     
-    private Vector2 start_pos;
+    public Vector2 start_pos;
+    
+    public int lives = 3;
+    public int respawnTimer = 2500;
+    private bool damage_wait_pending = false;
+    private Collider2D last_collided_object;
 
     void Start()
     {
@@ -164,5 +170,40 @@ public class player : MonoBehaviour
         if(transform.position.y > TOP_Y_EDGE) boundary_fixed_pos.y = TOP_Y_EDGE;
         else if(transform.position.y < BOTTOM_Y_EDGE) boundary_fixed_pos.y = BOTTOM_Y_EDGE;
         transform.position = boundary_fixed_pos;
+        
+        //Damage display delay
+        if (damage_wait_pending)
+        {
+            Thread.Sleep(respawnTimer);
+            foreach (SpriteRenderer sprite in sprites)
+            {
+                sprite.enabled = true;
+            }
+            timerEnded();
+            last_collided_object.enabled = true;
+            damage_wait_pending = false;
+        }
+    }
+    
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        last_collided_object = collision;
+        lives -= 1;
+        collision.enabled = false;
+        if (lives >= 0){
+            //sprites[0].color = Color.crimson;
+            foreach (SpriteRenderer sprite in sprites)
+            {
+                sprite.enabled = false;
+            }
+            damage_wait_pending = true;
+            string output = $"Damage Taken";
+            Debug.Log(output);
+        }
+        else Destroy(gameObject);
+    }
+    void timerEnded()
+    {
+        transform.position = start_pos; 
     }
 }

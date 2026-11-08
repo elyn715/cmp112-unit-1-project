@@ -9,16 +9,16 @@ public class Damage : MonoBehaviour
 {
     public int lives = 3;
     public int respawnTimer = 2500;
-    public Sprite sprite;
+    //public Sprite sprite;
     private SpriteRenderer m_spriteRenderer;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        m_spriteRenderer = GetComponent<SpriteRenderer>();
-        m_spriteRenderer.sprite = sprite;
+        m_spriteRenderer = GetComponentInParent<SpriteRenderer>();
+        //m_spriteRenderer.sprite = sprite;
     }
     // Update is called once per frame
-    async void OnCollisionEnter2D(Collision2D collision2D)
+    void OnCollisionEnter2D(Collision2D collision2D)
     {
         lives -= 1;
         collision2D.collider.enabled = false;
@@ -26,14 +26,14 @@ public class Damage : MonoBehaviour
             m_spriteRenderer.color = Color.crimson;
             string output = $"Damage Taken";
             Debug.Log(output);
-            Thread.Sleep(5000);
+            Thread.Sleep(respawnTimer);
             timerEnded();
-            m_spriteRenderer.color = Color.darkRed;
+            m_spriteRenderer.color = Color.white;
             collision2D.collider.enabled = true;
         }
     }
     void timerEnded()
     {
-        transform.position = new Vector2(2,1); 
+        transform.parent.position = new Vector2(-2.25f, -2.0f); 
     }
 }

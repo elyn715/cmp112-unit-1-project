@@ -1,8 +1,17 @@
+using System;
 using UnityEngine;
 
 public class bullet : MonoBehaviour
 {
     public float speed = 5.0f;
+    public bool is_enemy_bullet = false;
+    private Vector2 direction = Vector2.up;
+    private Rigidbody2D rb;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
 
     void Update()
     {
@@ -11,10 +20,22 @@ public class bullet : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    public void set_direction(Vector2 dir)
+    {
+        direction = dir;
+    }
     
     void FixedUpdate()
     {
-        Vector3 movement = new Vector2(0.0f, speed * Time.deltaTime);
-        transform.position += movement;
+        Vector3 movement = new Vector2(direction.x * speed * Time.deltaTime, direction.y * speed * Time.deltaTime); 
+        if (!is_enemy_bullet)
+        {
+            transform.position += movement;
+        }
+        else
+        {
+            rb.AddForce(movement);
+        }
     }
 }
