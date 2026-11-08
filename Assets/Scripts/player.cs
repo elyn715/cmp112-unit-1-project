@@ -133,6 +133,11 @@ public class player : MonoBehaviour
     
     void FixedUpdate()
     {
+        if (tutorial_on || damage_wait_pending)
+        {
+            move_x = 0;
+            move_y = 0;
+        }
         Vector3 movement = new Vector3(move_x * speed * Time.deltaTime, move_y * speed * Time.deltaTime, 0.0f);
         transform.position += movement;
 
@@ -180,30 +185,56 @@ public class player : MonoBehaviour
                 sprite.enabled = true;
             }
             timerEnded();
-            last_collided_object.enabled = true;
+            Debug.Log("in player fixed update");
+            if (last_collided_object)
+            {
+                last_collided_object.enabled = true;
+            }
             damage_wait_pending = false;
+            StartCoroutine(respawn_cooldown());
         }
+    }
+
+    private bool is_cooldown = false;
+    public int damage_cooldown = 1;
+
+    IEnumerator respawn_cooldown()
+    {
+        is_cooldown = true;
+        yield return new WaitForSeconds(damage_cooldown);
+        is_cooldown = false;
     }
     
     void OnTriggerEnter2D(Collider2D collision)
     {
-        last_collided_object = collision;
-        lives -= 1;
-        collision.enabled = false;
-        if (lives >= 0){
-            //sprites[0].color = Color.crimson;
-            foreach (SpriteRenderer sprite in sprites)
+        if (!is_cooldown)
+        {
+            if (collision.tag != "enemy_bullet")
             {
-                sprite.enabled = false;
+                last_collided_object = collision;
             }
-            damage_wait_pending = true;
-            string output = $"Damage Taken";
-            Debug.Log(output);
+            
+            lives -= 1;
+            collision.enabled = false;
+            if (lives >= 0){
+                foreach (SpriteRenderer sprite in sprites)
+                {
+                    sprite.enabled = false;
+                }
+                damage_wait_pending = true;
+                string output = $"Damage Taken";
+                Debug.Log(output);
+            }
+            else Destroy(gameObject);
         }
-        else Destroy(gameObject);
+            
     }
     void timerEnded()
     {
-        transform.position = start_pos; 
+        transform.position = start_pos;
+        foreach(shot shot in shots)
+        {
+            shot.reset_pos();
+        }
     }
 }

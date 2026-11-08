@@ -30,7 +30,16 @@ public class enemy : MonoBehaviour
         if (shot_offset == offset_counter)
         {
             GameObject new_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
-            new_bullet.GetComponent<bullet>().set_direction(player.transform.position -  transform.position);
+            if (player)
+            {
+                Vector2 direction = (player.transform.position - transform.position);
+                direction.y += 0.5f;
+                new_bullet.GetComponent<bullet>().set_direction(direction);
+            }
+            else
+            {
+                new_bullet.GetComponent<bullet>().set_direction(new Vector2(0.0f, 10.0f));
+            }
             offset_counter = 0;
         }
         else ++offset_counter;

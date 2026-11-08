@@ -46,5 +46,10 @@ public class bullet : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        else if (collision.tag == "player")
+        {
+            Debug.Log("destroyed bullet");
+            //Destroy(gameObject);
+        }
     }
 }
