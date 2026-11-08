@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class bullet : MonoBehaviour
 {
@@ -36,6 +37,14 @@ public class bullet : MonoBehaviour
         else
         {
             rb.AddForce(movement);
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag != "player_bullet" && collision.tag != "enemy_bullet" && !(collision.tag == "enemy" && is_enemy_bullet))
+        {
+            Destroy(gameObject);
         }
     }
 }

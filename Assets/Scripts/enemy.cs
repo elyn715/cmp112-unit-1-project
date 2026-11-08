@@ -30,4 +30,18 @@ public class enemy : MonoBehaviour
         }
         else ++offset_counter;
     }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "player_bullet")
+        {
+            Debug.Log("enemy damage");
+            health -= 10;
+            if (health <= 0)
+            {
+                Debug.Log("dead");
+                Destroy(gameObject);
+            }
+        }
+    }
 }
