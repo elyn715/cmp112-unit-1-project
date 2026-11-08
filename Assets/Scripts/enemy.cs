@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -10,9 +11,13 @@ public class enemy : MonoBehaviour
 
     public bullet bullet;
     public GameObject player;
+    private SpriteRenderer renderer;
+    private bool feedback_running = false;
     
     void Start()
     {
+        renderer = gameObject.GetComponentInChildren<SpriteRenderer>();
+        
         float starting_rotation = Random.Range(0, 360);
         transform.Rotate(0, 0, starting_rotation);
         
@@ -30,18 +35,29 @@ public class enemy : MonoBehaviour
         }
         else ++offset_counter;
     }
-
+    
+    IEnumerator damage_feedback()
+    {
+        feedback_running = true;
+        Color base_color = renderer.color;
+        renderer.color = Color.grey;
+        yield return new WaitForSeconds(0.005f);
+        renderer.color = base_color;
+        yield return new WaitForSeconds(0.005f);
+        feedback_running = false;
+    }
+    
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "player_bullet")
         {
-            Debug.Log("enemy damage");
             health -= 10;
             if (health <= 0)
             {
                 Debug.Log("dead");
                 Destroy(gameObject);
             }
+            else if(!feedback_running) StartCoroutine(damage_feedback());
         }
     }
 }
