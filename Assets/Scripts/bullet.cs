@@ -30,14 +30,7 @@ public class bullet : MonoBehaviour
     void FixedUpdate()
     {
         Vector3 movement = new Vector2(direction.x * speed * Time.deltaTime, direction.y * speed * Time.deltaTime); 
-        if (!is_enemy_bullet)
-        {
-            transform.position += movement;
-        }
-        else
-        {
-            rb.AddForce(movement);
-        }
+        transform.position += movement;
     }
 
     void OnTriggerEnter2D(Collider2D collision)

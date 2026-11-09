@@ -73,7 +73,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.025307417, y: 0.011680424}
+  m_Offset: {x: 0.02332927, y: 0.011680409}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -83,7 +83,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.4198727, y: 1.0545086}
+  m_Size: {x: 0.2339271, y: 0.4531527}
   m_EdgeRadius: 0
 --- !u!114 &423217987937211754
 MonoBehaviour:
@@ -167,6 +167,7 @@ MonoBehaviour:
   start_pos: {x: 0, y: 0}
   lives: 3
   respawnTimer: 2500
+  damage_cooldown: 1
 --- !u!1 &5178251785128584132
 GameObject:
   m_ObjectHideFlags: 0
