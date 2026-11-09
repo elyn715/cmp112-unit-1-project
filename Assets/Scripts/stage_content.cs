@@ -1,20 +1,25 @@
 using System.Collections.Generic;
 using Unity.Tutorials.Editor;
 using UnityEngine;
+using UnityEditor;
 
-struct spawn_event
+[System.Serializable] public struct spawn_event
 {
     public Vector3 spawn_pos;
     public enemy spawn_enemy; //Will be used later when there are more enemy types
     public float timestamp;
     public bool shoot_player;
+    private bool has_spawned;
 
+    public bool get_state(){return has_spawned;}
+    public void set_spawned(){has_spawned = true;}
     public spawn_event(Vector3 pos, enemy e, float time, bool targetplayer)
     {
         spawn_pos = pos;
         spawn_enemy = e;
         timestamp = time;
         shoot_player = targetplayer;
+        has_spawned = false;
     }
 }
 
@@ -22,36 +27,44 @@ public class stage_content : MonoBehaviour
 {
     public enemy enemy;
     public float start_time;
-    List<spawn_event> waves = new List<spawn_event>();
+    [SerializeField]public List<spawn_event> waves = new List<spawn_event>();
     public bool stage_running = false;
     public player player;
-    private bool enemy_spawned = false;
+    
+    private List<bool> spawn_state = new List<bool>();
     
     void Start()
     {
-        start_time = Time.time;
-        spawn_event new_wave = new spawn_event(new Vector3(0.0f, 0.0f, 0.0f), enemy, 2.0f, true);
-        waves.Add(new_wave);
+        if (!GetComponentInParent<stage_manager>().has_tutorial)
+        {
+            stage_running = true;
+            start_time = Time.time;
+        }
+        
+        foreach(spawn_event e in waves)
+        {
+            spawn_state.Add(e.get_state());
+        }
     }
-
-    
     
     void FixedUpdate()
     {
         if (stage_running)
         {
-            if (!enemy_spawned && start_time + waves[0].timestamp <= Time.time)
+            int index = 0;
+            foreach (spawn_event spawn in waves)
             {
-                enemy_spawned = true;
-                enemy new_enemy = Instantiate(enemy.gameObject, this.transform).GetComponent<enemy>();
-                Vector3 new_pos = new_enemy.transform.position + waves[0].spawn_pos;
-                new_enemy.transform.position = new_pos;
-
-                if (waves[0].shoot_player)
+                if (!spawn_state[index] && start_time + spawn.timestamp <= Time.time)
                 {
-                    enemy.shoot_at_player = true;
+                    spawn_state[index] = true;
+                    enemy new_enemy = Instantiate(enemy.gameObject, this.transform).GetComponent<enemy>();
+                    new_enemy.transform.parent = this.transform;
+                    Vector3 new_pos = new_enemy.transform.position + spawn.spawn_pos;
+                    new_enemy.transform.position = new_pos;
+                    new_enemy.shoot_at_player = spawn.shoot_player;
+                    new_enemy.shot_direction = player.transform.position;
                 }
-                enemy.shot_direction = player.transform.position;
+                ++index;
             }
             
             enemy[] enemies = GetComponentsInChildren<enemy>();

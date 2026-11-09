@@ -14,12 +14,16 @@ public class stage_manager : MonoBehaviour
     void Start()
     {
         stage = GetComponentInChildren<stage_content>();
-        if(!has_tutorial)
+        /*if(!has_tutorial)
         {
             Debug.Log("starting stage");
             stage.stage_running = true;
             stage.start_time = Time.time;
         }
+        else
+        {
+            stage.stage_running = false;
+        }*/
     }
     
     void Update()
@@ -55,5 +59,6 @@ public class stage_manager : MonoBehaviour
             pause_canvas.SetActive(paused);
             stage_canvas.SetActive(!paused);
         }
+        //PAUSE SCENE CONTENT
     }
 }
