@@ -113,7 +113,7 @@ MonoBehaviour:
   health: 500
   shot_offset: 10
   bullet: {fileID: 7702407191789642928, guid: bd5615faea3e0e04e891e68a74060734, type: 3}
-  player: {fileID: 0}
+  player: {fileID: 3293122379831323599, guid: fb3014c271a9d7b40aa9a63eb5ee4d61, type: 3}
 --- !u!1 &9095880631466537101
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,6 +8,11 @@ public class bullet : MonoBehaviour
     public bool is_enemy_bullet = false;
     private Vector2 direction = Vector2.up;
     private Rigidbody2D rb;
+    
+    public float LEFT_X_EDGE = -6.3f;
+    public float RIGHT_X_EDGE = 2.0f;
+    public float TOP_Y_EDGE = 4.3f;
+    public float BOTTOM_Y_EDGE = -4.3f;
 
     void Start()
     {
@@ -16,7 +21,8 @@ public class bullet : MonoBehaviour
 
     void Update()
     {
-        if (transform.position.y > 4.3f)
+        if (transform.position.x < LEFT_X_EDGE || transform.position.x > RIGHT_X_EDGE ||
+            transform.position.y > TOP_Y_EDGE || transform.position.y < BOTTOM_Y_EDGE)
         {
             Destroy(gameObject);
         }
@@ -38,11 +44,6 @@ public class bullet : MonoBehaviour
         if (collision.tag != "player_bullet" && collision.tag != "enemy_bullet" && !(collision.tag == "enemy" && is_enemy_bullet))
         {
             Destroy(gameObject);
-        }
-        else if (collision.tag == "player")
-        {
-            Debug.Log("destroyed bullet");
-            //Destroy(gameObject);
         }
     }
 }

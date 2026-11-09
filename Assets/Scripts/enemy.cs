@@ -10,9 +10,11 @@ public class enemy : MonoBehaviour
     private int offset_counter = 0;
 
     public bullet bullet;
-    public GameObject player;
     private SpriteRenderer renderer;
     private bool feedback_running = false;
+
+    public bool shoot_at_player = true;
+    public Vector3 shot_direction = new Vector2(0.0f, 1.0f);
     
     void Start()
     {
@@ -30,16 +32,8 @@ public class enemy : MonoBehaviour
         if (shot_offset == offset_counter)
         {
             GameObject new_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
-            if (player)
-            {
-                Vector2 direction = (player.transform.position - transform.position);
-                direction.y += 0.5f;
-                new_bullet.GetComponent<bullet>().set_direction(direction);
-            }
-            else
-            {
-                new_bullet.GetComponent<bullet>().set_direction(new Vector2(0.0f, 10.0f));
-            }
+            Vector3 direction = (shot_direction - transform.position).normalized;
+            new_bullet.GetComponent<bullet>().set_direction(direction);
             offset_counter = 0;
         }
         else ++offset_counter;
@@ -63,7 +57,6 @@ public class enemy : MonoBehaviour
             health -= 10;
             if (health <= 0)
             {
-                Debug.Log("dead");
                 Destroy(gameObject);
             }
             else if(!feedback_running) StartCoroutine(damage_feedback());

@@ -9,7 +9,19 @@ public class stage_manager : MonoBehaviour
     public GameObject pause_canvas;
     
     public GameObject stage_canvas;
+    private stage_content stage;
 
+    void Start()
+    {
+        stage = GetComponentInChildren<stage_content>();
+        if(!has_tutorial)
+        {
+            Debug.Log("starting stage");
+            stage.stage_running = true;
+            stage.start_time = Time.time;
+        }
+    }
+    
     void Update()
     {
         if (Keyboard.current.enterKey.wasPressedThisFrame && !paused)

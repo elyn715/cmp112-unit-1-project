@@ -185,7 +185,6 @@ public class player : MonoBehaviour
                 sprite.enabled = true;
             }
             timerEnded();
-            Debug.Log("in player fixed update");
             if (last_collided_object)
             {
                 last_collided_object.enabled = true;
