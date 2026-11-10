@@ -9,11 +9,6 @@ public class bullet : MonoBehaviour
     private Vector2 direction = Vector2.up;
     private Rigidbody2D rb;
     
-    public float LEFT_X_EDGE = -6.3f;
-    public float RIGHT_X_EDGE = 2.0f;
-    public float TOP_Y_EDGE = 4.3f;
-    public float BOTTOM_Y_EDGE = -4.3f;
-
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -21,8 +16,9 @@ public class bullet : MonoBehaviour
 
     void Update()
     {
-        if (transform.position.x < LEFT_X_EDGE || transform.position.x > RIGHT_X_EDGE ||
-            transform.position.y > TOP_Y_EDGE || transform.position.y < BOTTOM_Y_EDGE)
+        float bullet_offset = 0.6f;
+        if (transform.position.x < globlal_screen_boundaries.left_x_edge - bullet_offset || transform.position.x > globlal_screen_boundaries.right_x_edge + bullet_offset ||
+            transform.position.y > globlal_screen_boundaries.top_y_edge  + bullet_offset || transform.position.y < globlal_screen_boundaries.bottom_y_edge - bullet_offset)
         {
             Destroy(gameObject);
         }

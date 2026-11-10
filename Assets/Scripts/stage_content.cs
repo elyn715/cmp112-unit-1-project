@@ -103,7 +103,6 @@ public enum EnemyMoveType {PARAMETRIC, QUADRATIC, LINEAR_V, LINEAR_H, CIRCLE}
                 move_data.mirror = flip;
                 break;
         }
-        //move_data = new move_details(flip, paraw, parah);
     }
 }
 

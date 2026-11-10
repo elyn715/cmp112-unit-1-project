@@ -32,7 +32,7 @@ public class enemy : MonoBehaviour
         {
             //work out the x from the current y
             double starting_x = Math.Sqrt(transform.position.y) / move_data.quad_w;
-            transform.position -= new Vector3((float)starting_x, 0.0f, 0.0f);
+            transform.position -= new Vector3((float)starting_x, move_data.quad_stop, 0.0f);
         }
         
         renderer = gameObject.GetComponentInChildren<SpriteRenderer>();
@@ -66,7 +66,7 @@ public class enemy : MonoBehaviour
                 double testx = move_data.para_scale * Math.Sin(Time.time - para_start_time) * move_data.para_w;
                 double testy = move_data.para_scale * Math.Sin(Time.time - para_start_time) * Math.Cos(Time.time - para_start_time) * move_data.para_h;
                 if (move_data.mirror)
-                {//                                                                    may recentre the origin in next commit to fix this
+                {
                     transform.position = new Vector3(-(float)testx + origin_offset.x - 3.0f, (float)testy - origin_offset.y, 0.0f);
                 }
                 else
@@ -78,7 +78,7 @@ public class enemy : MonoBehaviour
                 break;
             case EnemyMoveType.QUADRATIC: //When using quadratic movement, place the enemy in line with the origin of the curve
                 float x = transform.position.x + origin_offset.x;
-                float new_y = (x * move_data.quad_w) * (x * move_data.quad_w);
+                float new_y = ((x * move_data.quad_w) * (x * move_data.quad_w)) - move_data.quad_stop;
                 transform.position = new Vector2(transform.position.x, new_y);
                 transform.position += new Vector3(speed, 0.0f, 0.0f) * Time.deltaTime;
                 break;

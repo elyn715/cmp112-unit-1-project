@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using UnityEngine.TextCore.LowLevel;
 
 public class player : MonoBehaviour
 {
@@ -14,10 +15,6 @@ public class player : MonoBehaviour
     private bool is_moving = false;
     private bool movement_start_pending = false;
     public float shot_move_delay = 0.02f;
-    public float LEFT_X_EDGE = -6.3f;
-    public float RIGHT_X_EDGE = 2.0f;
-    public float TOP_Y_EDGE = 4.3f;
-    public float BOTTOM_Y_EDGE = -4.3f;
     private SpriteRenderer[] sprites;
     private shot[] shots;
     
@@ -47,7 +44,16 @@ public class player : MonoBehaviour
         {
             tutorial_on = false;
         }
+        
         start_pos = transform.position;
+        
+        //Get camera details
+        /*float camera_height = Camera.main.orthographicSize * 2;
+        left_x_edge = -Camera.main.transform.position.x * 2.0f;
+        right_x_edge = Mathf.Abs(left_x_edge);
+        top_y_edge = camera_height / 2.0f - sprites[0].bounds.size.y / 2.0f;
+        bottom_y_edge = camera_height / -2.0f + sprites[0].bounds.size.y / 2.0f;
+        Debug.Log(globlal_screen_boundaries.test);*/
     }
     
     void OnMove(InputValue movementvalue)
@@ -170,10 +176,10 @@ public class player : MonoBehaviour
         
         //Check against boundaries
         Vector3 boundary_fixed_pos = transform.position;
-        if(transform.position.x < LEFT_X_EDGE) boundary_fixed_pos.x = LEFT_X_EDGE;
-        else if(transform.position.x > RIGHT_X_EDGE) boundary_fixed_pos.x = RIGHT_X_EDGE;
-        if(transform.position.y > TOP_Y_EDGE) boundary_fixed_pos.y = TOP_Y_EDGE;
-        else if(transform.position.y < BOTTOM_Y_EDGE) boundary_fixed_pos.y = BOTTOM_Y_EDGE;
+        if(transform.position.x < globlal_screen_boundaries.left_x_edge) boundary_fixed_pos.x = globlal_screen_boundaries.left_x_edge;
+        else if(transform.position.x > globlal_screen_boundaries.right_x_edge) boundary_fixed_pos.x = globlal_screen_boundaries.right_x_edge;
+        if(transform.position.y > globlal_screen_boundaries.top_y_edge) boundary_fixed_pos.y = globlal_screen_boundaries.top_y_edge;
+        else if(transform.position.y < globlal_screen_boundaries.bottom_y_edge) boundary_fixed_pos.y = globlal_screen_boundaries.bottom_y_edge;
         transform.position = boundary_fixed_pos;
         
         //Damage display delay

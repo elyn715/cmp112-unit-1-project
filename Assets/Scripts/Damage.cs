@@ -34,6 +34,6 @@ public class Damage : MonoBehaviour
     }
     void timerEnded()
     {
-        transform.parent.position = new Vector2(-2.25f, -2.0f); 
+        transform.parent.position = new Vector2(-0.0f, -2.0f); 
     }
 }
