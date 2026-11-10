@@ -8,7 +8,15 @@ public class enemy : MonoBehaviour
     public int health = 500;
     public int shot_offset = 5;
     private int offset_counter = 0;
+    public EnemyMoveType move_type;
+    public move_details move_data;
+    public float speed = 5.0f;
 
+    private float origin_offset;
+    private bool is_waiting_to_move = false;
+    private bool has_waited = false;
+    private float wait_start_time;
+    
     public bullet bullet;
     private SpriteRenderer renderer;
     private bool feedback_running = false;
@@ -18,6 +26,14 @@ public class enemy : MonoBehaviour
     
     void Start()
     {
+        origin_offset = -transform.position.x;
+        if (move_type == EnemyMoveType.QUADRATIC)
+        {
+            //work out the x from the current y
+            double starting_x = Math.Sqrt(transform.position.y) / move_data.quad_w;
+            transform.position -= new Vector3((float)starting_x, 0.0f, 0.0f);
+        }
+        
         renderer = gameObject.GetComponentInChildren<SpriteRenderer>();
         
         float starting_rotation = Random.Range(0, 360);
@@ -37,6 +53,52 @@ public class enemy : MonoBehaviour
             offset_counter = 0;
         }
         else ++offset_counter;
+        
+        switch (move_type)
+        {
+            case EnemyMoveType.PARAMETRIC:
+                break;
+            case EnemyMoveType.QUADRATIC: //When using quadratic movement, place the enemy in line with the origin of the curve
+                float x = transform.position.x + origin_offset;
+                float new_y = (x * move_data.quad_w) * (x * move_data.quad_w);
+                transform.position = new Vector2(transform.position.x, new_y);
+                transform.position += new Vector3(speed, 0.0f, 0.0f) * Time.deltaTime;
+                break;
+            case EnemyMoveType.LINEAR_V:
+                Vector3 move = new Vector3(0.0f, speed, 0.0f) * Time.deltaTime;
+                if (!is_waiting_to_move && !has_waited) //moving down
+                {
+                    transform.position -= move;
+                    if (transform.position.y <= move_data.vertical_stop)
+                    {
+                        Vector3 set_pos = new Vector3(transform.position.x, move_data.vertical_stop, 0.0f);
+                        transform.position = set_pos;
+                        is_waiting_to_move = true;
+                        wait_start_time = Time.time;
+                    }
+                }
+                else if (is_waiting_to_move)
+                {
+                    if (wait_start_time + move_data.wait_time <= Time.time)
+                    {
+                        //move back up
+                        has_waited = true;
+                        is_waiting_to_move = false;
+                    }
+                }
+                else if (!is_waiting_to_move && has_waited) //moving up
+                {
+                    transform.position += move;
+                }
+                
+                break;
+            case EnemyMoveType.LINEAR_H:
+                transform.position += new Vector3(speed, 0.0f, 0.0f) * Time.deltaTime;
+                if (move_data.mirror) transform.position *= -1.0f;
+                break;
+            case EnemyMoveType.CIRCLE:
+                break;
+        }
     }
     
     IEnumerator damage_feedback()

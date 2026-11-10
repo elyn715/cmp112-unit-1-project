@@ -1,7 +1,62 @@
 using System.Collections.Generic;
 using Unity.Tutorials.Editor;
+using Unity.U2D.Physics;
 using UnityEngine;
 using UnityEditor;
+
+public enum EnemyMoveType {PARAMETRIC, QUADRATIC, LINEAR_V, LINEAR_H, CIRCLE}
+
+[System.Serializable] public struct move_details
+{
+    public bool mirror;
+    
+    [Header("Parametric")]
+    public float para_w;
+    public float para_h;
+
+    [Header("Quadratic")]
+    public float quad_w;
+
+    public float quad_stop;
+    
+    [Header("Linear vertical")]
+    public float vertical_stop;
+    public float wait_time;
+    
+    [Header("Circular")]
+    public Vector2 circle_start;
+    public int rotations;
+    
+    //parametric
+    public move_details(bool flip, float paraw, float parah) : this()
+    {
+        mirror = flip;
+        para_w = paraw;
+        para_h = parah;
+    }
+
+    //quadratic and linear v - had to use the same constructor as the signature was the same
+    public move_details(float widthorstop, float stoporwait, bool usequad = true) : this()
+    {
+        if (usequad)
+        {
+            quad_w = widthorstop;
+            quad_stop = stoporwait;
+        }
+        else
+        {
+            vertical_stop = widthorstop;
+            wait_time = stoporwait;
+        }
+    }
+    
+    //circular
+    public move_details(Vector2 stop, int rotate) : this()
+    {
+        circle_start = stop;
+        rotations = rotate;
+    }
+}
 
 [System.Serializable] public struct spawn_event
 {
@@ -10,16 +65,43 @@ using UnityEditor;
     public float timestamp;
     public bool shoot_player;
     private bool has_spawned;
+    public EnemyMoveType move_type;
+    public move_details move_data;
 
     public bool get_state(){return has_spawned;}
     public void set_spawned(){has_spawned = true;}
-    public spawn_event(Vector3 pos, enemy e, float time, bool targetplayer)
+    public spawn_event(Vector3 pos, enemy e, float time, bool targetplayer, EnemyMoveType move,
+        bool flip,  float paraw, float parah,
+        float quadw, float quadstop,
+        float vstop,  float vwait,
+        Vector2 circlestop, int rotate)
     {
         spawn_pos = pos;
         spawn_enemy = e;
         timestamp = time;
         shoot_player = targetplayer;
         has_spawned = false;
+        move_type = move;
+        switch (move)
+        {
+            case EnemyMoveType.PARAMETRIC:
+                move_data = new move_details(flip, paraw, parah);
+                break;
+            case EnemyMoveType.QUADRATIC:
+                move_data = new move_details(quadw, quadstop);
+                break;
+            case EnemyMoveType.LINEAR_V:
+                move_data = new move_details(vstop, vwait, false);
+                break;
+            case EnemyMoveType.CIRCLE:
+                move_data = new move_details(circlestop, rotate);
+                break;
+            default:
+                move_data = new move_details();
+                move_data.mirror = flip;
+                break;
+        }
+        move_data = new move_details(flip, paraw, parah);
     }
 }
 
@@ -58,11 +140,11 @@ public class stage_content : MonoBehaviour
                 {
                     spawn_state[index] = true;
                     enemy new_enemy = Instantiate(enemy.gameObject, this.transform).GetComponent<enemy>();
-                    new_enemy.transform.parent = this.transform;
-                    Vector3 new_pos = new_enemy.transform.position + spawn.spawn_pos;
-                    new_enemy.transform.position = new_pos;
+                    new_enemy.transform.position += spawn.spawn_pos;
                     new_enemy.shoot_at_player = spawn.shoot_player;
                     new_enemy.shot_direction = player.transform.position;
+                    new_enemy.move_type = spawn.move_type;
+                    new_enemy.move_data = spawn.move_data;
                 }
                 ++index;
             }

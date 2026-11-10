@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5625412904650590047}
   - component: {fileID: 4079763380606657519}
   - component: {fileID: 1853675319298690486}
+  - component: {fileID: 4563511262333200703}
   m_Layer: 0
   m_Name: enemy
   m_TagString: enemy
@@ -28,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 654286379802098364}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.84, y: 0.15, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -112,8 +113,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   health: 500
   shot_offset: 10
+  move_type: 0
+  move_data:
+    mirror: 0
+    para_w: 0
+    para_h: 0
+    quad_w: 0
+    quad_stop: 0
+    vertical_stop: 0
+    wait_time: 0
+    circle_start: {x: 0, y: 0}
+    rotations: 0
+  speed: 3
   bullet: {fileID: 7702407191789642928, guid: bd5615faea3e0e04e891e68a74060734, type: 3}
-  player: {fileID: 3293122379831323599, guid: fb3014c271a9d7b40aa9a63eb5ee4d61, type: 3}
+  shoot_at_player: 1
+  shot_direction: {x: 0, y: 1, z: 0}
+--- !u!114 &4563511262333200703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 654286379802098364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76dab002bd34c4c499f09f5211f867e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &9095880631466537101
 GameObject:
   m_ObjectHideFlags: 0
