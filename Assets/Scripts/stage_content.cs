@@ -9,11 +9,12 @@ public enum EnemyMoveType {PARAMETRIC, QUADRATIC, LINEAR_V, LINEAR_H, CIRCLE}
 [System.Serializable] public struct move_details
 {
     public bool mirror;
-    
+
     [Header("Parametric")]
     public float para_w;
     public float para_h;
-
+    public float para_scale;
+    
     [Header("Quadratic")]
     public float quad_w;
 
@@ -28,9 +29,10 @@ public enum EnemyMoveType {PARAMETRIC, QUADRATIC, LINEAR_V, LINEAR_H, CIRCLE}
     public int rotations;
     
     //parametric
-    public move_details(bool flip, float paraw, float parah) : this()
+    public move_details(bool flip, float parascale, float paraw, float parah) : this()
     {
         mirror = flip;
+        para_scale = parascale;
         para_w = paraw;
         para_h = parah;
     }
@@ -71,7 +73,7 @@ public enum EnemyMoveType {PARAMETRIC, QUADRATIC, LINEAR_V, LINEAR_H, CIRCLE}
     public bool get_state(){return has_spawned;}
     public void set_spawned(){has_spawned = true;}
     public spawn_event(Vector3 pos, enemy e, float time, bool targetplayer, EnemyMoveType move,
-        bool flip,  float paraw, float parah,
+        bool flip,  float paras, float paraw, float parah,
         float quadw, float quadstop,
         float vstop,  float vwait,
         Vector2 circlestop, int rotate)
@@ -85,7 +87,7 @@ public enum EnemyMoveType {PARAMETRIC, QUADRATIC, LINEAR_V, LINEAR_H, CIRCLE}
         switch (move)
         {
             case EnemyMoveType.PARAMETRIC:
-                move_data = new move_details(flip, paraw, parah);
+                move_data = new move_details(flip, paras, paraw, parah);
                 break;
             case EnemyMoveType.QUADRATIC:
                 move_data = new move_details(quadw, quadstop);
@@ -101,7 +103,7 @@ public enum EnemyMoveType {PARAMETRIC, QUADRATIC, LINEAR_V, LINEAR_H, CIRCLE}
                 move_data.mirror = flip;
                 break;
         }
-        move_data = new move_details(flip, paraw, parah);
+        //move_data = new move_details(flip, paraw, parah);
     }
 }
 

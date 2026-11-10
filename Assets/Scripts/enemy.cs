@@ -12,10 +12,11 @@ public class enemy : MonoBehaviour
     public move_details move_data;
     public float speed = 5.0f;
 
-    private float origin_offset;
+    private Vector2 origin_offset;
     private bool is_waiting_to_move = false;
     private bool has_waited = false;
     private float wait_start_time;
+    private float para_start_time;
     
     public bullet bullet;
     private SpriteRenderer renderer;
@@ -26,7 +27,7 @@ public class enemy : MonoBehaviour
     
     void Start()
     {
-        origin_offset = -transform.position.x;
+        origin_offset = -transform.position;
         if (move_type == EnemyMoveType.QUADRATIC)
         {
             //work out the x from the current y
@@ -41,6 +42,8 @@ public class enemy : MonoBehaviour
         
         Color random_colour = new Color(Random.Range(0F, 1F), Random.Range(0F, 1F), Random.Range(0F, 1F));
         GetComponentInChildren<SpriteRenderer>().color = random_colour;
+
+        para_start_time = Time.time;
     }
 
     private void FixedUpdate()
@@ -56,15 +59,30 @@ public class enemy : MonoBehaviour
         
         switch (move_type)
         {
-            case EnemyMoveType.PARAMETRIC:
+            case EnemyMoveType.PARAMETRIC: // the enemy will only be visible once here, just delete after it goes offscreen
+                //x = scale sin time
+                //y = scale (sin time)(cos time)
+                //use distance away from starting point
+                double testx = move_data.para_scale * Math.Sin(Time.time - para_start_time) * move_data.para_w;
+                double testy = move_data.para_scale * Math.Sin(Time.time - para_start_time) * Math.Cos(Time.time - para_start_time) * move_data.para_h;
+                if (move_data.mirror)
+                {//                                                                    may recentre the origin in next commit to fix this
+                    transform.position = new Vector3(-(float)testx + origin_offset.x - 3.0f, (float)testy - origin_offset.y, 0.0f);
+                }
+                else
+                {
+                    transform.position = new Vector3((float)testx - origin_offset.x, -(float)testy - origin_offset.y, 0.0f);
+                }
+                
+                
                 break;
             case EnemyMoveType.QUADRATIC: //When using quadratic movement, place the enemy in line with the origin of the curve
-                float x = transform.position.x + origin_offset;
+                float x = transform.position.x + origin_offset.x;
                 float new_y = (x * move_data.quad_w) * (x * move_data.quad_w);
                 transform.position = new Vector2(transform.position.x, new_y);
                 transform.position += new Vector3(speed, 0.0f, 0.0f) * Time.deltaTime;
                 break;
-            case EnemyMoveType.LINEAR_V:
+            case EnemyMoveType.LINEAR_V: //delete when offscreen
                 Vector3 move = new Vector3(0.0f, speed, 0.0f) * Time.deltaTime;
                 if (!is_waiting_to_move && !has_waited) //moving down
                 {
@@ -92,11 +110,11 @@ public class enemy : MonoBehaviour
                 }
                 
                 break;
-            case EnemyMoveType.LINEAR_H:
+            case EnemyMoveType.LINEAR_H: //delete offscreen
                 transform.position += new Vector3(speed, 0.0f, 0.0f) * Time.deltaTime;
                 if (move_data.mirror) transform.position *= -1.0f;
                 break;
-            case EnemyMoveType.CIRCLE:
+            case EnemyMoveType.CIRCLE: //delete offscreen
                 break;
         }
     }

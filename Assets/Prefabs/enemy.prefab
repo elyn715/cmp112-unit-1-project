@@ -116,15 +116,14 @@ MonoBehaviour:
   move_type: 0
   move_data:
     mirror: 0
-    para_w: 0
-    para_h: 0
+    para_scale: 0
     quad_w: 0
     quad_stop: 0
     vertical_stop: 0
     wait_time: 0
     circle_start: {x: 0, y: 0}
     rotations: 0
-  speed: 3
+  speed: 2
   bullet: {fileID: 7702407191789642928, guid: bd5615faea3e0e04e891e68a74060734, type: 3}
   shoot_at_player: 1
   shot_direction: {x: 0, y: 1, z: 0}
