@@ -46,14 +46,6 @@ public class player : MonoBehaviour
         }
         
         start_pos = transform.position;
-        
-        //Get camera details
-        /*float camera_height = Camera.main.orthographicSize * 2;
-        left_x_edge = -Camera.main.transform.position.x * 2.0f;
-        right_x_edge = Mathf.Abs(left_x_edge);
-        top_y_edge = camera_height / 2.0f - sprites[0].bounds.size.y / 2.0f;
-        bottom_y_edge = camera_height / -2.0f + sprites[0].bounds.size.y / 2.0f;
-        Debug.Log(globlal_screen_boundaries.test);*/
     }
     
     void OnMove(InputValue movementvalue)

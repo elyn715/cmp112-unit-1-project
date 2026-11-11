@@ -111,7 +111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   health: 500
-  shot_offset: 10
+  shot_offset: 1
   move_type: 0
   move_data:
     mirror: 0
@@ -124,10 +124,13 @@ MonoBehaviour:
     wait_time: 0
     circle_start: {x: 0, y: 0}
     rotations: 0
+  shot_type: 0
+  shot_data:
+    spin_speed: 0
+    shots: 0
   speed: 2
   bullet: {fileID: 7702407191789642928, guid: bd5615faea3e0e04e891e68a74060734, type: 3}
-  shoot_at_player: 1
-  shot_direction: {x: 0, y: 1, z: 0}
+  shot_target: {x: 0, y: 0, z: 0}
 --- !u!1 &9095880631466537101
 GameObject:
   m_ObjectHideFlags: 0

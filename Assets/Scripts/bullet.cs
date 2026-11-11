@@ -7,12 +7,6 @@ public class bullet : MonoBehaviour
     public float speed = 5.0f;
     public bool is_enemy_bullet = false;
     private Vector2 direction = Vector2.up;
-    private Rigidbody2D rb;
-    
-    void Start()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
 
     void Update()
     {

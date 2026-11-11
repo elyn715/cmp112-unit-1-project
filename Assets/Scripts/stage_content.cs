@@ -3,8 +3,10 @@ using Unity.Tutorials.Editor;
 using Unity.U2D.Physics;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.Serialization;
 
-public enum EnemyMoveType {PARAMETRIC, QUADRATIC, LINEAR_V, LINEAR_H, CIRCLE}
+public enum EnemyMoveType {LINEAR_H, LINEAR_V, QUADRATIC, PARAMETRIC, CIRCLE}
+public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPLE}
 
 [System.Serializable] public struct move_details
 {
@@ -60,19 +62,38 @@ public enum EnemyMoveType {PARAMETRIC, QUADRATIC, LINEAR_V, LINEAR_H, CIRCLE}
     }
 }
 
+[System.Serializable] public struct shoot_details
+{
+    [Header("Spin")]
+    public float spin_speed;
+
+    [Header("Multiple")]
+    public int shots;
+
+    private bullet bullet;
+
+    public shoot_details(bullet b, float speed = 0.0f, int shotnum = 1)
+    {
+        bullet = b;
+        spin_speed = speed;
+        shots = shotnum;
+    }
+}
 [System.Serializable] public struct spawn_event
 {
     public Vector3 spawn_pos;
     public enemy spawn_enemy; //Will be used later when there are more enemy types
     public float timestamp;
-    public bool shoot_player;
     private bool has_spawned;
+    public int shot_rate;
+    public EnemyShootType shot_type;
+    public shoot_details shot_data;
     public EnemyMoveType move_type;
     public move_details move_data;
 
     public bool get_state(){return has_spawned;}
     public void set_spawned(){has_spawned = true;}
-    public spawn_event(Vector3 pos, enemy e, float time, bool targetplayer, EnemyMoveType move,
+    public spawn_event(Vector3 pos, enemy e, float time, int shotrate, EnemyShootType shot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
         bool flip,  float paras, float paraw, float parah,
         float quadw, float quadstop,
         float vstop,  float vwait,
@@ -81,9 +102,27 @@ public enum EnemyMoveType {PARAMETRIC, QUADRATIC, LINEAR_V, LINEAR_H, CIRCLE}
         spawn_pos = pos;
         spawn_enemy = e;
         timestamp = time;
-        shoot_player = targetplayer;
         has_spawned = false;
         move_type = move;
+        shot_type = shot;
+        shot_rate = shotrate;
+
+        switch (shot)
+        {
+            case EnemyShootType.VERTICAL: case EnemyShootType.PLAYER_FIXED: case EnemyShootType.PLAYER_FOLLOW:
+                shot_data = new shoot_details(bullet);
+                break;
+            case EnemyShootType.SPIN:
+                shot_data = new shoot_details(bullet, spinspeed);
+                break;
+            case EnemyShootType.MULTIPLE:
+                shot_data = new shoot_details(bullet, 0.0f, shotnum);
+                break;
+            default:
+                shot_data = new shoot_details();
+                break;
+        }
+        
         switch (move)
         {
             case EnemyMoveType.PARAMETRIC:
@@ -142,10 +181,12 @@ public class stage_content : MonoBehaviour
                     spawn_state[index] = true;
                     enemy new_enemy = Instantiate(enemy.gameObject, this.transform).GetComponent<enemy>();
                     new_enemy.transform.position += spawn.spawn_pos;
-                    new_enemy.shoot_at_player = spawn.shoot_player;
-                    new_enemy.shot_direction = player.transform.position;
                     new_enemy.move_type = spawn.move_type;
                     new_enemy.move_data = spawn.move_data;
+                    new_enemy.shot_type = spawn.shot_type;
+                    new_enemy.shot_data = spawn.shot_data;
+                    new_enemy.shot_offset = spawn.shot_rate;
+                    if(spawn.shot_type == EnemyShootType.PLAYER_FIXED) new_enemy.shot_target = player.transform.position;
                 }
                 ++index;
             }
@@ -153,7 +194,7 @@ public class stage_content : MonoBehaviour
             enemy[] enemies = GetComponentsInChildren<enemy>();
             foreach (enemy e in enemies)
             {
-                if(e.shoot_at_player) e.shot_direction = player.transform.position;
+                if(e.shot_type == EnemyShootType.PLAYER_FOLLOW) e.shot_target = player.transform.position;
             }
         }
     }
