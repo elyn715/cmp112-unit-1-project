@@ -55,7 +55,7 @@ public class enemy : MonoBehaviour
     {
         if (shot_type == EnemyShootType.SPIN)
         {
-            transform.eulerAngles += new Vector3(0.0f, 0.0f, -shot_data.spin_speed * Time.deltaTime);
+            transform.eulerAngles += new Vector3(0.0f, 0.0f, shot_data.spin_speed * Time.deltaTime);
         }
     }
     
@@ -66,14 +66,7 @@ public class enemy : MonoBehaviour
             GameObject new_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
             
             if (shot_type == EnemyShootType.VERTICAL) shot_target = new Vector3(transform.position.x, globlal_screen_boundaries.bottom_y_edge);
-            else if (shot_type == EnemyShootType.SPIN)
-            {
-                //There must be a better way of doing this - skips on lower values. Will improve on this later if time
-                float scaled_speed = shot_data.spin_speed * 100.0f * Time.deltaTime;
-                Vector3 target = new Vector3(Mathf.Cos((Time.time % scaled_speed) * scaled_speed),
-                    Mathf.Sin((Time.time % scaled_speed) * scaled_speed), 0.0f);
-                shot_target = transform.position + target;
-            }
+            else if (shot_type == EnemyShootType.SPIN) shot_target = transform.position + transform.right * 10.0f;
             
             Vector3 direction = (shot_target - transform.position).normalized;
             new_bullet.GetComponent<bullet>().set_direction(direction);
