@@ -100,7 +100,7 @@ public class enemy : MonoBehaviour
         
         switch (move_type)
         {
-            case EnemyMoveType.PARAMETRIC: // the enemy will only be visible once here, just delete after it goes offscreen
+            case EnemyMoveType.PARAMETRIC:
                 //x = scale sin time
                 //y = scale (sin time)(cos time)
                 double testx = move_data.para_scale * Math.Sin(Time.time - para_start_time) * move_data.para_w;
@@ -115,7 +115,7 @@ public class enemy : MonoBehaviour
                 }
                 break;
             
-            case EnemyMoveType.QUADRATIC: //When using quadratic movement, place the enemy in line with the origin of the curve
+            case EnemyMoveType.QUADRATIC:
                 float x = transform.position.x + origin_offset.x;
                 float new_y = ((x * move_data.quad_w) * (x * move_data.quad_w)) - move_data.quad_stop;
                 transform.position = new Vector2(transform.position.x, new_y);
@@ -124,7 +124,7 @@ public class enemy : MonoBehaviour
                 else transform.position += next_x;
                 break;
             
-            case EnemyMoveType.LINEAR_V: //delete when offscreen
+            case EnemyMoveType.LINEAR_V:
                 Vector3 move = new Vector3(0.0f, speed, 0.0f) * Time.deltaTime;
                 if (!is_waiting_to_move && !has_waited) //moving down
                 {
@@ -152,7 +152,7 @@ public class enemy : MonoBehaviour
                 }
                 break;
             
-            case EnemyMoveType.LINEAR_H: //delete offscreen
+            case EnemyMoveType.LINEAR_H:
                 Vector3 movement = new Vector3(speed, 0.0f, 0.0f) * Time.deltaTime;
                 if (move_data.mirror) transform.position -= movement;
                 else transform.position += movement;
