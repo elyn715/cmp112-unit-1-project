@@ -26,7 +26,8 @@ public class enemy : MonoBehaviour
     private bool feedback_running = false;
 
     public Vector3 shot_target = new Vector2(0.0f, 0.0f);
-    
+
+    private float fixed_z_rotation = 0.0f;
     void Start()
     {
         origin_offset = -transform.position;
@@ -42,8 +43,9 @@ public class enemy : MonoBehaviour
         
         renderer = gameObject.GetComponentInChildren<SpriteRenderer>();
         
-        float starting_rotation = Random.Range(0, 360);
-        transform.Rotate(0, 0, starting_rotation);
+        fixed_z_rotation = Random.Range(0, 360);
+        transform.eulerAngles = new Vector3(0, 0, fixed_z_rotation);
+        
         
         Color random_colour = new Color(Random.Range(0F, 1F), Random.Range(0F, 1F), Random.Range(0F, 1F));
         GetComponentInChildren<SpriteRenderer>().color = random_colour;
@@ -63,13 +65,27 @@ public class enemy : MonoBehaviour
     {
         if (shot_offset == offset_counter)
         {
-            GameObject new_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
-            
-            if (shot_type == EnemyShootType.VERTICAL) shot_target = new Vector3(transform.position.x, globlal_screen_boundaries.bottom_y_edge);
-            else if (shot_type == EnemyShootType.SPIN) shot_target = transform.position + transform.right * 10.0f;
-            
-            Vector3 direction = (shot_target - transform.position).normalized;
-            new_bullet.GetComponent<bullet>().set_direction(direction);
+            if (shot_type == EnemyShootType.MULTIPLE)
+            {
+                float difference = 360.0f / shot_data.shots;
+                for (int i = 0; i < shot_data.shots; ++i)
+                {
+                    transform.eulerAngles = new Vector3(0.0f, 0.0f, difference * i);
+                    GameObject multiple_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
+                    multiple_bullet.GetComponent<bullet>().set_direction(transform.right);
+                }
+                transform.eulerAngles = new Vector3(0, 0, fixed_z_rotation);
+            }
+            else
+            {
+                GameObject new_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
+                                
+                if (shot_type == EnemyShootType.VERTICAL) shot_target = new Vector3(transform.position.x, globlal_screen_boundaries.bottom_y_edge);
+                else if (shot_type == EnemyShootType.SPIN) shot_target = transform.position + transform.right;
+                
+                Vector3 direction = (shot_target - transform.position).normalized;
+                new_bullet.GetComponent<bullet>().set_direction(direction);
+            }
             offset_counter = 0;
         }
         else ++offset_counter;
