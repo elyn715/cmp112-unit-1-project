@@ -28,8 +28,12 @@ public class enemy : MonoBehaviour
     public Vector3 shot_target = new Vector2(0.0f, 0.0f);
 
     private float fixed_z_rotation = 0.0f;
+    
     void Start()
     {
+        renderer = gameObject.GetComponentInChildren<SpriteRenderer>();
+        
+        //Setup for bullet maths and movement
         origin_offset = -transform.position;
         if (move_type == EnemyMoveType.QUADRATIC)
         {
@@ -38,26 +42,30 @@ public class enemy : MonoBehaviour
             if (move_data.mirror) transform.position += start;
             else transform.position -= start;
         }
-        
+        para_start_time = Time.time;
         if (shot_type == EnemyShootType.VERTICAL) shot_target = new Vector2(transform.position.x, globlal_screen_boundaries.bottom_y_edge);
         
-        renderer = gameObject.GetComponentInChildren<SpriteRenderer>();
-        
+        //Set random rotation
         fixed_z_rotation = Random.Range(0, 360);
         transform.eulerAngles = new Vector3(0, 0, fixed_z_rotation);
         
-        
+        //Set random colour
         Color random_colour = new Color(Random.Range(0F, 1F), Random.Range(0F, 1F), Random.Range(0F, 1F));
         GetComponentInChildren<SpriteRenderer>().color = random_colour;
-
-        para_start_time = Time.time;
     }
 
     void Update()
     {
-        if (shot_type == EnemyShootType.SPIN)
+        if (shot_type == EnemyShootType.SPIN) transform.eulerAngles += new Vector3(0.0f, 0.0f, shot_data.spin_speed * Time.deltaTime);
+    }
+
+    void bounds_check()
+    {
+        float enemy_offset = 1.0f;
+        if (transform.position.x < globlal_screen_boundaries.left_x_edge  - enemy_offset || transform.position.x > globlal_screen_boundaries.right_x_edge  + enemy_offset|
+            transform.position.y > globlal_screen_boundaries.top_y_edge + enemy_offset || transform.position.y < globlal_screen_boundaries.bottom_y_edge - enemy_offset)
         {
-            transform.eulerAngles += new Vector3(0.0f, 0.0f, shot_data.spin_speed * Time.deltaTime);
+            Destroy(gameObject);
         }
     }
     
@@ -105,8 +113,6 @@ public class enemy : MonoBehaviour
                 {
                     transform.position = new Vector3((float)testx - origin_offset.x, -(float)testy - origin_offset.y, 0.0f);
                 }
-                
-                
                 break;
             
             case EnemyMoveType.QUADRATIC: //When using quadratic movement, place the enemy in line with the origin of the curve
@@ -144,22 +150,26 @@ public class enemy : MonoBehaviour
                 {
                     transform.position += move;
                 }
-                
                 break;
+            
             case EnemyMoveType.LINEAR_H: //delete offscreen
                 Vector3 movement = new Vector3(speed, 0.0f, 0.0f) * Time.deltaTime;
                 if (move_data.mirror) transform.position -= movement;
                 else transform.position += movement;
                 break;
-            case EnemyMoveType.CIRCLE: //delete offscreen
-                break;
+        }
+
+        //Only start checking bounds 2 seconds after spawn
+        if (Time.time >= para_start_time + 2)
+        {
+            bounds_check();
         }
     }
     
     IEnumerator damage_feedback()
     {
         feedback_running = true;
-        Color base_color = renderer.color;
+        Color base_color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, renderer.color.a);
         renderer.color = Color.grey;
         yield return new WaitForSeconds(0.005f);
         renderer.color = base_color;
@@ -176,7 +186,10 @@ public class enemy : MonoBehaviour
             {
                 Destroy(gameObject);
             }
-            else if(!feedback_running) StartCoroutine(damage_feedback());
+            else if(!feedback_running)
+            {
+                StartCoroutine(damage_feedback());
+            }
         }
     }
 }

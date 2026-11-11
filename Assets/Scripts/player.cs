@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -28,7 +29,7 @@ public class player : MonoBehaviour
     public int respawnTimer = 2500;
     private bool damage_wait_pending = false;
     private Collider2D last_collided_object;
-
+    
     void Start()
     {
         sprites = gameObject.GetComponentsInChildren<SpriteRenderer>();

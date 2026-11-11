@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using Unity.Tutorials.Editor;
 using Unity.U2D.Physics;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.Serialization;
 
-public enum EnemyMoveType {LINEAR_H, LINEAR_V, QUADRATIC, PARAMETRIC, CIRCLE}
+public enum EnemyMoveType {LINEAR_H, LINEAR_V, QUADRATIC, PARAMETRIC}
 public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPLE}
 
 [System.Serializable] public struct move_details
@@ -25,10 +24,6 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
     [Header("Linear vertical")]
     public float vertical_stop;
     public float wait_time;
-    
-    [Header("Circular")]
-    public Vector2 circle_start;
-    public int rotations;
     
     //parametric
     public move_details(bool flip, float parascale, float paraw, float parah) : this()
@@ -53,15 +48,7 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
             wait_time = stoporwait;
         }
     }
-    
-    //circular
-    public move_details(Vector2 stop, int rotate) : this()
-    {
-        circle_start = stop;
-        rotations = rotate;
-    }
 }
-
 [System.Serializable] public struct shoot_details
 {
     [Header("Spin")]
@@ -82,7 +69,8 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
 [System.Serializable] public struct spawn_event
 {
     public Vector3 spawn_pos;
-    public enemy spawn_enemy; //Will be used later when there are more enemy types
+    public enemy spawn_enemy;
+    public int health;
     public float timestamp;
     private bool has_spawned;
     public int shot_rate;
@@ -93,14 +81,14 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
 
     public bool get_state(){return has_spawned;}
     public void set_spawned(){has_spawned = true;}
-    public spawn_event(Vector3 pos, enemy e, float time, int shotrate, EnemyShootType shot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
+    public spawn_event(Vector3 pos, enemy e, int h, float time, int shotrate, EnemyShootType shot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
         bool flip,  float paras, float paraw, float parah,
         float quadw, float quadstop,
-        float vstop,  float vwait,
-        Vector2 circlestop, int rotate)
+        float vstop,  float vwait)
     {
         spawn_pos = pos;
         spawn_enemy = e;
+        health = h;
         timestamp = time;
         has_spawned = false;
         move_type = move;
@@ -133,9 +121,6 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
                 break;
             case EnemyMoveType.LINEAR_V:
                 move_data = new move_details(vstop, vwait, false);
-                break;
-            case EnemyMoveType.CIRCLE:
-                move_data = new move_details(circlestop, rotate);
                 break;
             default:
                 move_data = new move_details();
@@ -186,6 +171,7 @@ public class stage_content : MonoBehaviour
                     new_enemy.shot_type = spawn.shot_type;
                     new_enemy.shot_data = spawn.shot_data;
                     new_enemy.shot_offset = spawn.shot_rate;
+                    new_enemy.health = spawn.health;
                     if(spawn.shot_type == EnemyShootType.PLAYER_FIXED) new_enemy.shot_target = player.transform.position;
                 }
                 ++index;
@@ -194,7 +180,7 @@ public class stage_content : MonoBehaviour
             enemy[] enemies = GetComponentsInChildren<enemy>();
             foreach (enemy e in enemies)
             {
-                if(e.shot_type == EnemyShootType.PLAYER_FOLLOW) e.shot_target = player.transform.position;
+                if(player && e.shot_type == EnemyShootType.PLAYER_FOLLOW) e.shot_target = player.transform.position;
             }
         }
     }

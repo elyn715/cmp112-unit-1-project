@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -43,14 +44,14 @@ public class shot : MonoBehaviour
         transform.position = fixed_pos;
         
     }
-
+    
     void Update()
     {
         if (!Keyboard.current.zKey.wasReleasedThisFrame && is_shooting)
         {
             if (shot_offset == offset_counter)
             {
-                Instantiate(bullet.gameObject, transform).GetComponent<bullet>().transform.position += new Vector3(0.0f, 0.2f, 0.0f);
+                Instantiate(bullet.gameObject, transform.position, transform.rotation).GetComponent<bullet>().transform.position += new Vector3(0.0f, 0.2f, 0.0f);
                 offset_counter = 0;
             }
             else ++offset_counter;

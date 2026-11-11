@@ -7,7 +7,7 @@ public class bullet : MonoBehaviour
     public float speed = 5.0f;
     public bool is_enemy_bullet = false;
     private Vector2 direction = Vector2.up;
-
+    
     void Update()
     {
         float bullet_offset = 0.6f;
