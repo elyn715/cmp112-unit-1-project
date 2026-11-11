@@ -50,8 +50,7 @@ public class shot : MonoBehaviour
         {
             if (shot_offset == offset_counter)
             {
-                Vector3 new_pos = new Vector3(transform.position.x - 0.25f, transform.position.y - 0.55f, 0.0f);
-                Instantiate(bullet.gameObject, this.transform);
+                Instantiate(bullet.gameObject, transform).GetComponent<bullet>().transform.position += new Vector3(0.0f, 0.2f, 0.0f);
                 offset_counter = 0;
             }
             else ++offset_counter;
