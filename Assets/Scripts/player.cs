@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using System.Threading;
+using UnityEngine.TextCore.LowLevel;
 
 public class player : MonoBehaviour
 {
@@ -13,10 +16,6 @@ public class player : MonoBehaviour
     private bool is_moving = false;
     private bool movement_start_pending = false;
     public float shot_move_delay = 0.02f;
-    public float LEFT_X_EDGE = -6.3f;
-    public float RIGHT_X_EDGE = 2.0f;
-    public float TOP_Y_EDGE = 4.3f;
-    public float BOTTOM_Y_EDGE = -4.3f;
     private SpriteRenderer[] sprites;
     private shot[] shots;
     
@@ -24,8 +23,13 @@ public class player : MonoBehaviour
     public UnityEvent tutorial_event;
     public bool tutorial_on = true;
     
-    private Vector2 start_pos;
-
+    public Vector2 start_pos;
+    
+    public int lives = 3;
+    public int respawnTimer = 2500;
+    private bool damage_wait_pending = false;
+    private Collider2D last_collided_object;
+    
     void Start()
     {
         sprites = gameObject.GetComponentsInChildren<SpriteRenderer>();
@@ -41,6 +45,7 @@ public class player : MonoBehaviour
         {
             tutorial_on = false;
         }
+        
         start_pos = transform.position;
     }
     
@@ -127,6 +132,11 @@ public class player : MonoBehaviour
     
     void FixedUpdate()
     {
+        if (tutorial_on || damage_wait_pending)
+        {
+            move_x = 0;
+            move_y = 0;
+        }
         Vector3 movement = new Vector3(move_x * speed * Time.deltaTime, move_y * speed * Time.deltaTime, 0.0f);
         transform.position += movement;
 
@@ -159,10 +169,70 @@ public class player : MonoBehaviour
         
         //Check against boundaries
         Vector3 boundary_fixed_pos = transform.position;
-        if(transform.position.x < LEFT_X_EDGE) boundary_fixed_pos.x = LEFT_X_EDGE;
-        else if(transform.position.x > RIGHT_X_EDGE) boundary_fixed_pos.x = RIGHT_X_EDGE;
-        if(transform.position.y > TOP_Y_EDGE) boundary_fixed_pos.y = TOP_Y_EDGE;
-        else if(transform.position.y < BOTTOM_Y_EDGE) boundary_fixed_pos.y = BOTTOM_Y_EDGE;
+        if(transform.position.x < globlal_screen_boundaries.left_x_edge) boundary_fixed_pos.x = globlal_screen_boundaries.left_x_edge;
+        else if(transform.position.x > globlal_screen_boundaries.right_x_edge) boundary_fixed_pos.x = globlal_screen_boundaries.right_x_edge;
+        if(transform.position.y > globlal_screen_boundaries.top_y_edge) boundary_fixed_pos.y = globlal_screen_boundaries.top_y_edge;
+        else if(transform.position.y < globlal_screen_boundaries.bottom_y_edge) boundary_fixed_pos.y = globlal_screen_boundaries.bottom_y_edge;
         transform.position = boundary_fixed_pos;
+        
+        //Damage display delay
+        if (damage_wait_pending)
+        {
+            Thread.Sleep(respawnTimer);
+            foreach (SpriteRenderer sprite in sprites)
+            {
+                sprite.enabled = true;
+            }
+            timerEnded();
+            if (last_collided_object)
+            {
+                last_collided_object.enabled = true;
+            }
+            damage_wait_pending = false;
+            StartCoroutine(respawn_cooldown());
+        }
+    }
+
+    private bool is_cooldown = false;
+    public int damage_cooldown = 1;
+
+    IEnumerator respawn_cooldown()
+    {
+        is_cooldown = true;
+        yield return new WaitForSeconds(damage_cooldown);
+        is_cooldown = false;
+    }
+    
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!is_cooldown)
+        {
+            if (collision.tag != "enemy_bullet")
+            {
+                last_collided_object = collision;
+            }
+            
+            lives -= 1;
+            collision.enabled = false;
+            if (lives >= 0){
+                foreach (SpriteRenderer sprite in sprites)
+                {
+                    sprite.enabled = false;
+                }
+                damage_wait_pending = true;
+                string output = $"Damage Taken";
+                Debug.Log(output);
+            }
+            else Destroy(gameObject);
+        }
+            
+    }
+    void timerEnded()
+    {
+        transform.position = start_pos;
+        foreach(shot shot in shots)
+        {
+            shot.reset_pos();
+        }
     }
 }
