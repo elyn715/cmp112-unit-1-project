@@ -248,6 +248,4 @@ public class player : MonoBehaviour
             shot.reset_pos();
         }
     }
-    
-    
 }
