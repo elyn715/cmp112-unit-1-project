@@ -98,3 +98,5 @@ MonoBehaviour:
   waves: []
   stage_running: 0
   player: {fileID: 8257721387413550715, guid: fb3014c271a9d7b40aa9a63eb5ee4d61, type: 3}
+  bomb: {fileID: 638612000503382504, guid: 0eced2f87f87381429310188dd36ba8e, type: 3}
+  life: {fileID: 638612000503382504, guid: 955de98e1658a4a4c91ebe73296ef32d, type: 3}

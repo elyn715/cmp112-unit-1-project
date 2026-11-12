@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 
 public class enemy_collide : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class enemy_collide : MonoBehaviour
     private SpriteRenderer renderer;
     private ParticleSystem particles;
     public int health = 500;
-
+    [NonSerialized] public item_details item_data;
     [NonSerialized] public bool is_active = true;
 
     void Start()
@@ -35,11 +36,17 @@ public class enemy_collide : MonoBehaviour
             if (collision.tag == "player_bullet")
             {
                 health -= 10;
-                Debug.Log("health is now " + health);
                 if (health <= 0)
                 {
-                    //particles.Play();
-                    particles.Emit(5);
+                    particles.Emit(item_data.score_items);
+                    if (item_data.drop_bomb)
+                    {
+                        Instantiate(GetComponentInParent<stage_content>().bomb, transform.position, transform.rotation);
+                    }
+                    else if (item_data.drop_life)
+                    {
+                        Instantiate(GetComponentInParent<stage_content>().life, transform.position, transform.rotation);
+                    }
                     transform.parent.eulerAngles = new Vector3(0, 0, 0);
                     
                     is_active = false;

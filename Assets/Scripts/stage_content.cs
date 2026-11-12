@@ -66,6 +66,22 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
         shots = shotnum;
     }
 }
+
+[System.Serializable] public struct item_details
+{
+    public int score_items;
+    
+    [Header("Only pick one")]
+    public bool drop_bomb;
+    public bool drop_life;
+
+    public item_details(int items, bool bomb, bool life)
+    {
+        score_items = items;
+        drop_bomb = bomb;
+        drop_life = life;
+    }
+}
 [System.Serializable] public struct spawn_event
 {
     public Vector3 spawn_pos;
@@ -74,6 +90,7 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
     public float timestamp;
     private bool has_spawned;
     public int shot_rate;
+    public item_details item_data;
     public EnemyShootType shot_type;
     public shoot_details shot_data;
     public EnemyMoveType move_type;
@@ -81,7 +98,7 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
 
     public bool get_state(){return has_spawned;}
     public void set_spawned(){has_spawned = true;}
-    public spawn_event(Vector3 pos, enemy e, int h, float time, int shotrate, EnemyShootType shot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
+    public spawn_event(Vector3 pos, enemy e, int h, int items, bool bomb, bool life, float time, int shotrate, EnemyShootType shot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
         bool flip,  float paras, float paraw, float parah,
         float quadw, float quadstop,
         float vstop,  float vwait)
@@ -95,6 +112,8 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
         shot_type = shot;
         shot_rate = shotrate;
 
+        item_data = new item_details(items, bomb, life);
+        
         switch (shot)
         {
             case EnemyShootType.VERTICAL: case EnemyShootType.PLAYER_FIXED: case EnemyShootType.PLAYER_FOLLOW:
@@ -139,6 +158,9 @@ public class stage_content : MonoBehaviour
     public player player;
     
     private List<bool> spawn_state = new List<bool>();
+
+    public GameObject bomb;
+    public GameObject life;
     
     void Start()
     {
@@ -171,6 +193,7 @@ public class stage_content : MonoBehaviour
                     new_enemy.shot_type = spawn.shot_type;
                     new_enemy.shot_data = spawn.shot_data;
                     new_enemy.shot_offset = spawn.shot_rate;
+                    new_enemy.GetComponentInChildren<enemy_collide>().item_data = spawn.item_data;
                     new_enemy.GetComponentInChildren<enemy_collide>().health = spawn.health;
                     if(spawn.shot_type == EnemyShootType.PLAYER_FIXED) new_enemy.shot_target = player.transform.position;
                 }
