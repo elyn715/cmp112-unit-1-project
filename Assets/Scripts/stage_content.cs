@@ -171,7 +171,7 @@ public class stage_content : MonoBehaviour
                     new_enemy.shot_type = spawn.shot_type;
                     new_enemy.shot_data = spawn.shot_data;
                     new_enemy.shot_offset = spawn.shot_rate;
-                    new_enemy.health = spawn.health;
+                    new_enemy.GetComponentInChildren<enemy_collide>().health = spawn.health;
                     if(spawn.shot_type == EnemyShootType.PLAYER_FIXED) new_enemy.shot_target = player.transform.position;
                 }
                 ++index;

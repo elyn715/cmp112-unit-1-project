@@ -18,6 +18,8 @@ public class player : MonoBehaviour
     public float shot_move_delay = 0.02f;
     private SpriteRenderer[] sprites;
     private shot[] shots;
+
+    public int score = 0;
     
     public UnityEvent pause_event;
     public UnityEvent tutorial_event;
@@ -207,6 +209,7 @@ public class player : MonoBehaviour
     {
         if (!is_cooldown)
         {
+            Debug.Log("player collision");
             if (collision.tag != "enemy_bullet")
             {
                 last_collided_object = collision;
@@ -225,7 +228,6 @@ public class player : MonoBehaviour
             }
             else Destroy(gameObject);
         }
-            
     }
     void timerEnded()
     {
@@ -234,5 +236,11 @@ public class player : MonoBehaviour
         {
             shot.reset_pos();
         }
+    }
+
+    private void OnParticleCollision(GameObject collision)
+    {
+        score += 1000;
+        Debug.Log("score is now " + score);
     }
 }
