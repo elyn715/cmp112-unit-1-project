@@ -36,8 +36,13 @@ public class enemy_collide : MonoBehaviour
             if (collision.tag == "player_bullet")
             {
                 health -= 10;
+
+                FindAnyObjectByType<statistics>().add_damage(10);
+                
                 if (health <= 0)
                 {
+                    FindAnyObjectByType<statistics>().defeat_enemy();
+                    
                     particles.Emit(item_data.score_items);
                     if (item_data.drop_bomb)
                     {

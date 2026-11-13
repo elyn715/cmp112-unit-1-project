@@ -100,7 +100,11 @@ public class player : MonoBehaviour
 
     void OnBomb(InputValue value)
     {
-        Debug.Log("using bomb");
+        if (bombs > 0)
+        {
+            Debug.Log("using bomb");
+            FindAnyObjectByType<statistics>().use_bomb();
+        }
     }
 
     IEnumerator wait_to_move_shot()
@@ -225,6 +229,8 @@ public class player : MonoBehaviour
             {
                 last_collided_object = collision;
             }
+
+            FindAnyObjectByType<statistics>().lose_life();
             
             lives -= 1;
             collision.enabled = false;
@@ -247,5 +253,11 @@ public class player : MonoBehaviour
         {
             shot.reset_pos();
         }
+    }
+
+    void OnParticleCollision(GameObject other)
+    {
+        score += 1000;
+        FindAnyObjectByType<statistics>().add_score(1000);
     }
 }
