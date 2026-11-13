@@ -1,7 +1,26 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
+//This is a singleton
 public class statistics : MonoBehaviour
 {
+    public static statistics instance;
+
+    void Awake()
+    {
+        if (!instance)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            //Move stored data to this instance
+            copy_data(instance);
+            Destroy(gameObject);
+        }
+    }
+
     public player player;
     
     //Add references to text elements here
@@ -11,12 +30,16 @@ public class statistics : MonoBehaviour
     private int bombs_used = 0;
     private int enemies_defeated = 0;
     private int total_score = 0;
-    
-    void Start()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
 
+    private void copy_data(statistics newobject)
+    {
+        lives_lost = newobject.lives_lost;
+        damage_dealt = newobject.damage_dealt;
+        bombs_used = newobject.bombs_used;
+        enemies_defeated = newobject.enemies_defeated;
+        total_score = newobject.total_score;
+    }
+    
     public void reset()
     {
         lives_lost = 0;

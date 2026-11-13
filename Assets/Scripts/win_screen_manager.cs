@@ -6,7 +6,7 @@ public class win_screen_manager : MonoBehaviour
 {
     void Start()
     {
-        FindAnyObjectByType<statistics>().show_details();
+        statistics.instance.show_details();
     }
     
     void Update()
@@ -18,7 +18,7 @@ public class win_screen_manager : MonoBehaviour
             SceneManager.LoadScene(0);
             
             //Reset stats
-            FindAnyObjectByType<statistics>().reset();
+            statistics.instance.reset();
         }
     }
 }

@@ -103,7 +103,7 @@ public class player : MonoBehaviour
         if (bombs > 0)
         {
             Debug.Log("using bomb");
-            FindAnyObjectByType<statistics>().use_bomb();
+            statistics.instance.use_bomb();
         }
     }
 
@@ -230,7 +230,7 @@ public class player : MonoBehaviour
                 last_collided_object = collision;
             }
 
-            FindAnyObjectByType<statistics>().lose_life();
+            statistics.instance.lose_life();
             
             lives -= 1;
             collision.enabled = false;
@@ -258,6 +258,6 @@ public class player : MonoBehaviour
     void OnParticleCollision(GameObject other)
     {
         score += 1000;
-        FindAnyObjectByType<statistics>().add_score(1000);
+        statistics.instance.add_score(1000);
     }
 }
