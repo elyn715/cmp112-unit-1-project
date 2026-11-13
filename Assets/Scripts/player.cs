@@ -18,6 +18,8 @@ public class player : MonoBehaviour
     public float shot_move_delay = 0.02f;
     private SpriteRenderer[] sprites;
     private shot[] shots;
+
+    public int score = 0;
     
     public UnityEvent pause_event;
     public UnityEvent tutorial_event;
@@ -26,9 +28,13 @@ public class player : MonoBehaviour
     public Vector2 start_pos;
     
     public int lives = 3;
+    public int bombs = 3;
     public int respawnTimer = 2500;
     private bool damage_wait_pending = false;
     private Collider2D last_collided_object;
+    
+    private bool is_cooldown = false;
+    public int damage_cooldown = 1;
     
     void Start()
     {
@@ -192,10 +198,7 @@ public class player : MonoBehaviour
             StartCoroutine(respawn_cooldown());
         }
     }
-
-    private bool is_cooldown = false;
-    public int damage_cooldown = 1;
-
+    
     IEnumerator respawn_cooldown()
     {
         is_cooldown = true;
@@ -205,8 +208,19 @@ public class player : MonoBehaviour
     
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!is_cooldown)
+        if (collision.tag == "bomb")
         {
+            ++bombs;
+            Debug.Log("player gained bomb, bombs is now " + bombs);
+        }
+        else if (collision.tag == "life")
+        {
+            ++lives;
+            Debug.Log("player gained life, lives is now " + lives);
+        }
+        else if (!is_cooldown)
+        {
+            Debug.Log("player collision");
             if (collision.tag != "enemy_bullet")
             {
                 last_collided_object = collision;
@@ -225,7 +239,6 @@ public class player : MonoBehaviour
             }
             else Destroy(gameObject);
         }
-            
     }
     void timerEnded()
     {

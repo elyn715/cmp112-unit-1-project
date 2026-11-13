@@ -129,6 +129,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   speed: 5
   shot_move_delay: 0.02
+  score: 0
   pause_event:
     m_PersistentCalls:
       m_Calls:

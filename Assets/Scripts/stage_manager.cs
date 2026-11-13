@@ -7,24 +7,7 @@ public class stage_manager : MonoBehaviour
     public bool has_tutorial = false;
     public bool paused = false;
     public GameObject pause_canvas;
-    
     public GameObject stage_canvas;
-    private stage_content stage;
-
-    void Start()
-    {
-        stage = GetComponentInChildren<stage_content>();
-        /*if(!has_tutorial)
-        {
-            Debug.Log("starting stage");
-            stage.stage_running = true;
-            stage.start_time = Time.time;
-        }
-        else
-        {
-            stage.stage_running = false;
-        }*/
-    }
     
     void Update()
     {

@@ -8,6 +8,8 @@ TagManager:
   - player
   - player_bullet
   - enemy_bullet
+  - bomb
+  - life
   layers:
   - Default
   - TransparentFX

@@ -6,7 +6,6 @@ using Random = UnityEngine.Random;
 
 public class enemy : MonoBehaviour
 {
-    public int health = 500;
     public int shot_offset = 5;
     private int offset_counter = 0;
     public EnemyMoveType move_type;
@@ -22,8 +21,6 @@ public class enemy : MonoBehaviour
     private float para_start_time;
     
     public bullet bullet;
-    private SpriteRenderer renderer;
-    private bool feedback_running = false;
 
     public Vector3 shot_target = new Vector2(0.0f, 0.0f);
 
@@ -31,8 +28,6 @@ public class enemy : MonoBehaviour
     
     void Start()
     {
-        renderer = gameObject.GetComponentInChildren<SpriteRenderer>();
-        
         //Setup for bullet maths and movement
         origin_offset = -transform.position;
         if (move_type == EnemyMoveType.QUADRATIC)
@@ -56,7 +51,7 @@ public class enemy : MonoBehaviour
 
     void Update()
     {
-        if (shot_type == EnemyShootType.SPIN) transform.eulerAngles += new Vector3(0.0f, 0.0f, shot_data.spin_speed * Time.deltaTime);
+        if (shot_type == EnemyShootType.SPIN && GetComponentInChildren<enemy_collide>().is_active) transform.eulerAngles += new Vector3(0.0f, 0.0f, shot_data.spin_speed * Time.deltaTime);
     }
 
     void bounds_check()
@@ -71,125 +66,106 @@ public class enemy : MonoBehaviour
     
     private void FixedUpdate()
     {
-        if (shot_offset == offset_counter)
+        //if not dead
+        if (GetComponentInChildren<enemy_collide>().is_active)
         {
-            if (shot_type == EnemyShootType.MULTIPLE)
+            if (shot_offset == offset_counter)
             {
-                float difference = 360.0f / shot_data.shots;
-                for (int i = 0; i < shot_data.shots; ++i)
+                if (shot_type == EnemyShootType.MULTIPLE)
                 {
-                    transform.eulerAngles = new Vector3(0.0f, 0.0f, difference * i);
-                    GameObject multiple_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
-                    multiple_bullet.GetComponent<bullet>().set_direction(transform.right);
-                }
-                transform.eulerAngles = new Vector3(0, 0, fixed_z_rotation);
-            }
-            else
-            {
-                GameObject new_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
-                                
-                if (shot_type == EnemyShootType.VERTICAL) shot_target = new Vector3(transform.position.x, globlal_screen_boundaries.bottom_y_edge);
-                else if (shot_type == EnemyShootType.SPIN) shot_target = transform.position + transform.right;
-                
-                Vector3 direction = (shot_target - transform.position).normalized;
-                new_bullet.GetComponent<bullet>().set_direction(direction);
-            }
-            offset_counter = 0;
-        }
-        else ++offset_counter;
-        
-        switch (move_type)
-        {
-            case EnemyMoveType.PARAMETRIC:
-                //x = scale sin time
-                //y = scale (sin time)(cos time)
-                double testx = move_data.para_scale * Math.Sin(Time.time - para_start_time) * move_data.para_w;
-                double testy = move_data.para_scale * Math.Sin(Time.time - para_start_time) * Math.Cos(Time.time - para_start_time) * move_data.para_h;
-                if (move_data.mirror)
-                {
-                    transform.position = new Vector3(-(float)testx - origin_offset.x, (float)testy - origin_offset.y, 0.0f);
+                    float difference = 360.0f / shot_data.shots;
+                    for (int i = 0; i < shot_data.shots; ++i)
+                    {
+                        transform.eulerAngles = new Vector3(0.0f, 0.0f, difference * i);
+                        GameObject multiple_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
+                        multiple_bullet.GetComponent<bullet>().set_direction(transform.right);
+                    }
+                    transform.eulerAngles = new Vector3(0, 0, fixed_z_rotation);
                 }
                 else
                 {
-                    transform.position = new Vector3((float)testx - origin_offset.x, -(float)testy - origin_offset.y, 0.0f);
+                    GameObject new_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
+                                    
+                    if (shot_type == EnemyShootType.VERTICAL) shot_target = new Vector3(transform.position.x, globlal_screen_boundaries.bottom_y_edge);
+                    else if (shot_type == EnemyShootType.SPIN) shot_target = transform.position + transform.right;
+                    
+                    Vector3 direction = (shot_target - transform.position).normalized;
+                    new_bullet.GetComponent<bullet>().set_direction(direction);
                 }
-                break;
+                offset_counter = 0;
+            }
+            else ++offset_counter;
             
-            case EnemyMoveType.QUADRATIC:
-                float x = transform.position.x + origin_offset.x;
-                float new_y = ((x * move_data.quad_w) * (x * move_data.quad_w)) - move_data.quad_stop;
-                transform.position = new Vector2(transform.position.x, new_y);
-                Vector3 next_x = new Vector3(speed, 0.0f, 0.0f) * Time.deltaTime;
-                if (move_data.mirror) transform.position -= next_x;
-                else transform.position += next_x;
-                break;
-            
-            case EnemyMoveType.LINEAR_V:
-                Vector3 move = new Vector3(0.0f, speed, 0.0f) * Time.deltaTime;
-                if (!is_waiting_to_move && !has_waited) //moving down
-                {
-                    transform.position -= move;
-                    if (transform.position.y <= move_data.vertical_stop)
+            switch (move_type)
+            {
+                case EnemyMoveType.PARAMETRIC:
+                    //x = scale sin time
+                    //y = scale (sin time)(cos time)
+                    double testx = move_data.para_scale * Math.Sin(Time.time - para_start_time) * move_data.para_w;
+                    double testy = move_data.para_scale * Math.Sin(Time.time - para_start_time) * Math.Cos(Time.time - para_start_time) * move_data.para_h;
+                    if (move_data.mirror)
                     {
-                        Vector3 set_pos = new Vector3(transform.position.x, move_data.vertical_stop, 0.0f);
-                        transform.position = set_pos;
-                        is_waiting_to_move = true;
-                        wait_start_time = Time.time;
+                        transform.position = new Vector3(-(float)testx - origin_offset.x, (float)testy - origin_offset.y, 0.0f);
                     }
-                }
-                else if (is_waiting_to_move)
-                {
-                    if (wait_start_time + move_data.wait_time <= Time.time)
+                    else
                     {
-                        //move back up
-                        has_waited = true;
-                        is_waiting_to_move = false;
+                        transform.position = new Vector3((float)testx - origin_offset.x, -(float)testy - origin_offset.y, 0.0f);
                     }
-                }
-                else if (!is_waiting_to_move && has_waited) //moving up
-                {
-                    transform.position += move;
-                }
-                break;
-            
-            case EnemyMoveType.LINEAR_H:
-                Vector3 movement = new Vector3(speed, 0.0f, 0.0f) * Time.deltaTime;
-                if (move_data.mirror) transform.position -= movement;
-                else transform.position += movement;
-                break;
-        }
+                    break;
+                
+                case EnemyMoveType.QUADRATIC:
+                    float x = transform.position.x + origin_offset.x;
+                    float new_y = ((x * move_data.quad_w) * (x * move_data.quad_w)) - move_data.quad_stop;
+                    transform.position = new Vector2(transform.position.x, new_y);
+                    Vector3 next_x = new Vector3(speed, 0.0f, 0.0f) * Time.deltaTime;
+                    if (move_data.mirror) transform.position -= next_x;
+                    else transform.position += next_x;
+                    break;
+                
+                case EnemyMoveType.LINEAR_V:
+                    Vector3 move = new Vector3(0.0f, speed, 0.0f) * Time.deltaTime;
+                    if (!is_waiting_to_move && !has_waited) //moving down
+                    {
+                        transform.position -= move;
+                        if (transform.position.y <= move_data.vertical_stop)
+                        {
+                            Vector3 set_pos = new Vector3(transform.position.x, move_data.vertical_stop, 0.0f);
+                            transform.position = set_pos;
+                            is_waiting_to_move = true;
+                            wait_start_time = Time.time;
+                        }
+                    }
+                    else if (is_waiting_to_move)
+                    {
+                        if (wait_start_time + move_data.wait_time <= Time.time)
+                        {
+                            //move back up
+                            has_waited = true;
+                            is_waiting_to_move = false;
+                        }
+                    }
+                    else if (!is_waiting_to_move && has_waited) //moving up
+                    {
+                        transform.position += move;
+                    }
+                    break;
+                
+                case EnemyMoveType.LINEAR_H:
+                    Vector3 movement = new Vector3(speed, 0.0f, 0.0f) * Time.deltaTime;
+                    if (move_data.mirror) transform.position -= movement;
+                    else transform.position += movement;
+                    break;
+            }
 
-        //Only start checking bounds 2 seconds after spawn
-        if (Time.time >= para_start_time + 2)
-        {
-            bounds_check();
+            //Only start checking bounds 2 seconds after spawn
+            if (Time.time >= para_start_time + 2)
+            {
+                bounds_check();
+            }
         }
-    }
-    
-    IEnumerator damage_feedback()
-    {
-        feedback_running = true;
-        Color base_color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, renderer.color.a);
-        renderer.color = Color.grey;
-        yield return new WaitForSeconds(0.005f);
-        renderer.color = base_color;
-        yield return new WaitForSeconds(0.005f);
-        feedback_running = false;
-    }
-    
-    void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == "player_bullet")
+        else
         {
-            health -= 10;
-            if (health <= 0)
-            {
-                Destroy(gameObject);
-            }
-            else if(!feedback_running)
-            {
-                StartCoroutine(damage_feedback());
-            }
+            if(GetComponent<ParticleSystem>().particleCount == 0) Destroy(gameObject);
         }
     }
 }
