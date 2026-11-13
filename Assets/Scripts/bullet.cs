@@ -28,6 +28,7 @@ public class bullet : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        //Covers player bullet hitting enemies, enemy bullet hitting player
         if (collision.tag != "player_bullet" && collision.tag != "enemy_bullet" && !(collision.tag == "enemy" && is_enemy_bullet))
         {
             Destroy(gameObject);

@@ -18,6 +18,7 @@ public class pause_buttons : MonoBehaviour
 
     public void quit_to_title_button()
     {
+        statistics.instance.reset();
         SceneManager.LoadScene(0);
     }
 }
