@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7038802452298441465}
@@ -2441,27 +2441,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   health: 500
-  give_player_score:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8257721387413550715, guid: fb3014c271a9d7b40aa9a63eb5ee4d61, type: 3}
-        m_TargetAssemblyTypeName: player, Assembly-CSharp
-        m_MethodName: receive_score
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  give_player_bomb:
-    m_PersistentCalls:
-      m_Calls: []
-  give_player_life:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &9095880631466537101
 GameObject:
   m_ObjectHideFlags: 0
