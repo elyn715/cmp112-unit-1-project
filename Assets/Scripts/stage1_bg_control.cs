@@ -30,14 +30,14 @@ public class background_controller : MonoBehaviour
     
     void Update()
     {
-        //move water
+        //Move water
         water.position -= new Vector3(0.0f, water_speed * Time.deltaTime, 0.0f);
         if (water.position.y < -2.7)
         {
             water.position = initial_water;
         }
         
-        //move_clouds
+        //Move_clouds
         for (int i = 0; i < clouds.Length; i++)
         {
             if (!move_cloud_down[i])
@@ -46,7 +46,7 @@ public class background_controller : MonoBehaviour
                 
                 if (clouds[i].transform.position.y > 6.2f)
                 {
-                    //set that cloud to move down to initial
+                    //Reached top, so move back down
                     move_cloud_down[i] = true;
                 }
             }

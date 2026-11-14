@@ -309,6 +309,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: stage1_bg
       objectReference: {fileID: 0}
+    - target: {fileID: 2389046575261542731, guid: e7e58f9267df22641b2f2e5de2d66edc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6081717453047872443, guid: e7e58f9267df22641b2f2e5de2d66edc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6922724809850191918, guid: e7e58f9267df22641b2f2e5de2d66edc, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

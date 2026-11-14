@@ -5,9 +5,6 @@ TextureImporter:
   - first:
       213: 6460919638950970551
     second: shadows_0
-  - first:
-      213: 8912248866912395419
-    second: shadows_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -40,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -54,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 48
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -123,7 +120,7 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 57
+        width: 56
         height: 480
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -135,28 +132,6 @@ TextureImporter:
       bones: []
       spriteID: 7b484022e2cc9a950800000000000000
       internalID: 6460919638950970551
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: shadows_1
-      rect:
-        serializedVersion: 2
-        x: 359
-        y: 0
-        width: 63
-        height: 480
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b90e036102baeab70800000000000000
-      internalID: 8912248866912395419
       vertices: []
       indices: 
       edges: []
@@ -176,7 +151,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       shadows_0: 6460919638950970551
-      shadows_1: 8912248866912395419
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
