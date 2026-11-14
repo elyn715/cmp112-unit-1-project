@@ -42,7 +42,7 @@ public class background_controller : MonoBehaviour
         {
             if (!move_cloud_down[i])
             {
-                clouds[i].transform.position += new Vector3(0.0f, cloud_speed * Time.deltaTime, -0.0001f);
+                clouds[i].transform.position += new Vector3(0.0f, cloud_speed * Time.deltaTime, -0.01f);
                 
                 if (clouds[i].transform.position.y > 6.2f)
                 {
