@@ -28,7 +28,7 @@ public class background_controller : MonoBehaviour
         bottom_cloud = clouds.Last().transform.position;
     }
     
-    void Update()
+    void FixedUpdate()
     {
         //Move water
         water.position -= new Vector3(0.0f, water_speed * Time.deltaTime, 0.0f);

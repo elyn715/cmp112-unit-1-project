@@ -48,7 +48,7 @@ MonoBehaviour:
   has_tutorial: 0
   paused: 0
   pause_canvas: {fileID: 4178742597455453657, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
-  stage_canvas: {fileID: 994862823196154614, guid: 1a9bdd630e2d522479a5f21436a27deb, type: 3}
+  stage_canvas: {fileID: 2847079604181068605, guid: 4513560292e3eb14d9e27a9b5d964501, type: 3}
 --- !u!1 &7754001127135978536
 GameObject:
   m_ObjectHideFlags: 0

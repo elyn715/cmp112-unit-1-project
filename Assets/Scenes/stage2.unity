@@ -251,6 +251,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: pause_canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 4178742597455453657, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4381529640323244039, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -681,6 +685,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4513560292e3eb14d9e27a9b5d964501, type: 3}
+--- !u!1 &1528806446 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2847079604181068605, guid: 4513560292e3eb14d9e27a9b5d964501, type: 3}
+  m_PrefabInstance: {fileID: 1528806445}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1577494827
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -769,7 +778,7 @@ PrefabInstance:
     - target: {fileID: 5475620351878761064, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: stage_canvas
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1528806446}
     - target: {fileID: 6542052414815266974, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

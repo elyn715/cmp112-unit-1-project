@@ -30,7 +30,7 @@ public class stage3_bg_control : MonoBehaviour
 
     private int front_index = 0;
 
-    void Update()
+    void FixedUpdate()
     {
         for (int i = 0; i < edges.Length; i++)
         {

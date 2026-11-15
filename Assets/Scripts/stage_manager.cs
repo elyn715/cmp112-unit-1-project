@@ -40,8 +40,8 @@ public class stage_manager : MonoBehaviour
         {
             paused = !paused;
             pause_canvas.SetActive(paused);
-            stage_canvas.SetActive(!paused);
+            if(!paused) Time.timeScale = 1;
+            else Time.timeScale = 0;
         }
-        //PAUSE SCENE CONTENT
     }
 }

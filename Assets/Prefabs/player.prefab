@@ -148,7 +148,7 @@ MonoBehaviour:
   tutorial_event:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2246016169193389699, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
         m_TargetAssemblyTypeName: tutorial_manager, Assembly-CSharp
         m_MethodName: 
         m_Mode: 1

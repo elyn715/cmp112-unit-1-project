@@ -490,6 +490,16 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!1 &1062632348 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2847079604181068605, guid: 4513560292e3eb14d9e27a9b5d964501, type: 3}
+  m_PrefabInstance: {fileID: 80838668}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1343321830 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4178742597455453657, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
+  m_PrefabInstance: {fileID: 1568709458}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1568709458
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -623,11 +633,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
---- !u!1 &1568709459 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4178742597455453657, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
-  m_PrefabInstance: {fileID: 1568709458}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1573072603
 GameObject:
   m_ObjectHideFlags: 0
@@ -730,11 +735,11 @@ PrefabInstance:
     - target: {fileID: 5475620351878761064, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: pause_canvas
       value: 
-      objectReference: {fileID: 1568709459}
+      objectReference: {fileID: 1343321830}
     - target: {fileID: 5475620351878761064, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: stage_canvas
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1062632348}
     - target: {fileID: 6542052414815266974, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

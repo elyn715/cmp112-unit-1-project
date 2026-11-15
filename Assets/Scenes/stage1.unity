@@ -149,6 +149,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::tutorial_manager
   tutorial_on: 1
   tutorial_canvas: {fileID: 777311376}
+--- !u!1 &241391886 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4178742597455453657, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
+  m_PrefabInstance: {fileID: 3947161670531263901}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &280739130 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8257721387413550715, guid: fb3014c271a9d7b40aa9a63eb5ee4d61, type: 3}
@@ -254,6 +259,10 @@ PrefabInstance:
     - target: {fileID: 6081717453047872443, guid: e7e58f9267df22641b2f2e5de2d66edc, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6922724809850191918, guid: e7e58f9267df22641b2f2e5de2d66edc, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6922724809850191918, guid: e7e58f9267df22641b2f2e5de2d66edc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -932,11 +941,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
---- !u!1 &3947161670531263903 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4178742597455453657, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
-  m_PrefabInstance: {fileID: 3947161670531263901}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6948443877515072175
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1332,7 +1336,7 @@ PrefabInstance:
     - target: {fileID: 5475620351878761064, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: pause_canvas
       value: 
-      objectReference: {fileID: 3947161670531263903}
+      objectReference: {fileID: 241391886}
     - target: {fileID: 5475620351878761064, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: stage_canvas
       value: 
@@ -1643,6 +1647,10 @@ PrefabInstance:
     - target: {fileID: 2847079604181068605, guid: 4513560292e3eb14d9e27a9b5d964501, type: 3}
       propertyPath: m_Name
       value: stage_canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847079604181068605, guid: 4513560292e3eb14d9e27a9b5d964501, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
