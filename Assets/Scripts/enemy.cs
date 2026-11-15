@@ -29,6 +29,27 @@ public class enemy : MonoBehaviour
     [NonSerialized] public Vector3 shot_target = new Vector2(0.0f, 0.0f);
 
     private float fixed_z_rotation = 0.0f;
+
+    private Color[] colours =
+    {
+        Color.aquamarine,
+        Color.blueViolet,
+        Color.cadetBlue,
+        Color.coral,
+        Color.cornflowerBlue,
+        Color.crimson,
+        Color.cyan,
+        Color.darkMagenta,
+        Color.darkRed,
+        Color.gold,
+        Color.greenYellow,
+        Color.mediumSeaGreen,
+        Color.khaki,
+        Color.lightBlue,
+        Color.orangeRed,
+        Color.wheat,
+        Color.white
+    };
     
     void Start()
     {
@@ -55,8 +76,9 @@ public class enemy : MonoBehaviour
         //Set random colour
         if (randomize_colour)
         {
-            Color random_colour = new Color(Random.Range(0F, 1F), Random.Range(0F, 1F), Random.Range(0F, 1F));
-            GetComponentInChildren<SpriteRenderer>().color = random_colour;
+            int random_colour = Random.Range(0, colours.Length - 1);
+            //Color random_colour = new Color(Random.Range(0F, 1F), Random.Range(0F, 1F), Random.Range(0F, 1F));
+            GetComponentInChildren<SpriteRenderer>().color = colours[random_colour];
         }
     }
 
