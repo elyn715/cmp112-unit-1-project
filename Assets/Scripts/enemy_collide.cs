@@ -8,7 +8,6 @@ public class enemy_collide : MonoBehaviour
     private bool feedback_running = false;
     private SpriteRenderer renderer;
     private ParticleSystem particles;
-    public int health = 500;
     [NonSerialized] public item_details item_data;
     [NonSerialized] public bool is_active = true;
 
@@ -35,11 +34,11 @@ public class enemy_collide : MonoBehaviour
         {
             if (collision.tag == "player_bullet")
             {
-                health -= 10;
+                GetComponentInParent<enemy>().health -= 10;
 
                 statistics.instance.add_damage(10);
                 
-                if (health <= 0)
+                if (GetComponentInParent<enemy>().health <= 0)
                 {
                     statistics.instance.defeat_enemy();
                     

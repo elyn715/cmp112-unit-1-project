@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.U2D.Physics;
 using UnityEngine;
@@ -86,31 +87,30 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
 {
     public Vector3 spawn_pos;
     public enemy spawn_enemy;
-    public int health;
     public float timestamp;
-    private bool has_spawned;
-    public int shot_rate;
+    
     public item_details item_data;
     public EnemyShootType shot_type;
     public shoot_details shot_data;
     public EnemyMoveType move_type;
     public move_details move_data;
+    
+    private bool has_spawned;
 
     public bool get_state(){return has_spawned;}
-    public void set_spawned(){has_spawned = true;}
-    public spawn_event(Vector3 pos, enemy e, int h, int items, bool bomb, bool life, float time, int shotrate, EnemyShootType shot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
+    public spawn_event(Vector3 pos, enemy e, int items, bool bomb, bool life, float time, EnemyShootType shot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
         bool flip,  float paras, float paraw, float parah,
         float quadw, float quadstop,
         float vstop,  float vwait)
     {
         spawn_pos = pos;
         spawn_enemy = e;
-        health = h;
         timestamp = time;
-        has_spawned = false;
+        
         move_type = move;
         shot_type = shot;
-        shot_rate = shotrate;
+        
+        has_spawned = false;
 
         item_data = new item_details(items, bomb, life);
         
@@ -151,9 +151,8 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
 
 public class stage_content : MonoBehaviour
 {
-    public enemy enemy;
-    public float start_time;
-    [SerializeField]public List<spawn_event> waves = new List<spawn_event>();
+    [NonSerialized] public float start_time;
+    [SerializeField] public List<spawn_event> waves = new List<spawn_event>();
     public bool stage_running = false;
     public player player;
     
@@ -186,15 +185,13 @@ public class stage_content : MonoBehaviour
                 if (!spawn_state[index] && start_time + spawn.timestamp <= Time.time)
                 {
                     spawn_state[index] = true;
-                    enemy new_enemy = Instantiate(enemy.gameObject, this.transform).GetComponent<enemy>();
+                    enemy new_enemy = Instantiate(spawn.spawn_enemy, this.transform).GetComponent<enemy>();
                     new_enemy.transform.position += spawn.spawn_pos;
                     new_enemy.move_type = spawn.move_type;
                     new_enemy.move_data = spawn.move_data;
                     new_enemy.shot_type = spawn.shot_type;
                     new_enemy.shot_data = spawn.shot_data;
-                    new_enemy.shot_offset = spawn.shot_rate;
                     new_enemy.GetComponentInChildren<enemy_collide>().item_data = spawn.item_data;
-                    new_enemy.GetComponentInChildren<enemy_collide>().health = spawn.health;
                     if(spawn.shot_type == EnemyShootType.PLAYER_FIXED) new_enemy.shot_target = player.transform.position;
                 }
                 ++index;

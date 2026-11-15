@@ -8,10 +8,11 @@ public class enemy : MonoBehaviour
 {
     public int shot_offset = 5;
     private int offset_counter = 0;
-    public EnemyMoveType move_type;
-    public move_details move_data;
-    public EnemyShootType shot_type;
-    public shoot_details shot_data;
+    public int health = 500;
+    [NonSerialized] public EnemyMoveType move_type;
+    [NonSerialized] public move_details move_data;
+    [NonSerialized] public EnemyShootType shot_type;
+    [NonSerialized]  public shoot_details shot_data;
     public float speed = 5.0f;
 
     private Vector2 origin_offset;
@@ -22,9 +23,33 @@ public class enemy : MonoBehaviour
     
     public bullet bullet;
 
-    public Vector3 shot_target = new Vector2(0.0f, 0.0f);
+    public bool randomize_rotation = true;
+    public bool randomize_colour = true;
+
+    [NonSerialized] public Vector3 shot_target = new Vector2(0.0f, 0.0f);
 
     private float fixed_z_rotation = 0.0f;
+
+    private Color[] colours =
+    {
+        Color.aquamarine,
+        Color.blueViolet,
+        Color.cadetBlue,
+        Color.coral,
+        Color.cornflowerBlue,
+        Color.crimson,
+        Color.cyan,
+        Color.darkMagenta,
+        Color.darkRed,
+        Color.gold,
+        Color.greenYellow,
+        Color.mediumSeaGreen,
+        Color.khaki,
+        Color.lightBlue,
+        Color.orangeRed,
+        Color.wheat,
+        Color.white
+    };
     
     void Start()
     {
@@ -39,14 +64,22 @@ public class enemy : MonoBehaviour
         }
         para_start_time = Time.time;
         if (shot_type == EnemyShootType.VERTICAL) shot_target = new Vector2(transform.position.x, globlal_screen_boundaries.bottom_y_edge);
+        else if(shot_type == EnemyShootType.PLAYER_FIXED) shot_target = GetComponentInParent<stage_content>().player.transform.position;
         
         //Set random rotation
-        fixed_z_rotation = Random.Range(0, 360);
-        transform.eulerAngles = new Vector3(0, 0, fixed_z_rotation);
+        if (randomize_rotation)
+        {
+            fixed_z_rotation = Random.Range(0, 360);
+            transform.eulerAngles = new Vector3(0, 0, fixed_z_rotation);
+        }
         
         //Set random colour
-        Color random_colour = new Color(Random.Range(0F, 1F), Random.Range(0F, 1F), Random.Range(0F, 1F));
-        GetComponentInChildren<SpriteRenderer>().color = random_colour;
+        if (randomize_colour)
+        {
+            int random_colour = Random.Range(0, colours.Length - 1);
+            //Color random_colour = new Color(Random.Range(0F, 1F), Random.Range(0F, 1F), Random.Range(0F, 1F));
+            GetComponentInChildren<SpriteRenderer>().color = colours[random_colour];
+        }
     }
 
     void Update()

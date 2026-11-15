@@ -148,7 +148,7 @@ MonoBehaviour:
   tutorial_event:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2246016169193389699, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
         m_TargetAssemblyTypeName: tutorial_manager, Assembly-CSharp
         m_MethodName: 
         m_Mode: 1
@@ -163,6 +163,7 @@ MonoBehaviour:
   tutorial_on: 1
   start_pos: {x: 0, y: 0}
   lives: 3
+  bombs: 3
   respawnTimer: 2500
   damage_cooldown: 1
 --- !u!1 &5178251785128584132
@@ -176,7 +177,7 @@ GameObject:
   - component: {fileID: 1887194919615994132}
   - component: {fileID: 8402383644538265404}
   m_Layer: 0
-  m_Name: placeholder_player_0
+  m_Name: sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -246,7 +247,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 383093538958839663, guid: 188ad62cccdae7a49bff0fe3b34656b4, type: 3}
+  m_Sprite: {fileID: 4334783836991956000, guid: 2f05ee82cfa860f49bd10adc8f83dc4d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
