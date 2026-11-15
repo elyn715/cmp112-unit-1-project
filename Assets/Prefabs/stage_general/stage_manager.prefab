@@ -93,53 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6299f263b0fb2c4c83053ae48a297b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  waves:
-  - spawn_pos: {x: 0, y: 0, z: 0}
-    spawn_enemy: {fileID: 0}
-    health: 0
-    timestamp: 0
-    shot_rate: 0
-    item_data:
-      score_items: 0
-      drop_bomb: 0
-      drop_life: 0
-    shot_type: 0
-    shot_data:
-      spin_speed: 0
-      shots: 0
-    move_type: 0
-    move_data:
-      mirror: 0
-      para_w: 0
-      para_h: 0
-      para_scale: 0
-      quad_w: 0
-      quad_stop: 0
-      vertical_stop: 0
-      wait_time: 0
-  - spawn_pos: {x: 0, y: 0, z: 0}
-    spawn_enemy: {fileID: 0}
-    health: 0
-    timestamp: 0
-    shot_rate: 0
-    item_data:
-      score_items: 0
-      drop_bomb: 0
-      drop_life: 0
-    shot_type: 0
-    shot_data:
-      spin_speed: 0
-      shots: 0
-    move_type: 0
-    move_data:
-      mirror: 0
-      para_w: 0
-      para_h: 0
-      para_scale: 0
-      quad_w: 0
-      quad_stop: 0
-      vertical_stop: 0
-      wait_time: 0
+  waves: []
   stage_running: 0
   player: {fileID: 8257721387413550715, guid: fb3014c271a9d7b40aa9a63eb5ee4d61, type: 3}
   bomb: {fileID: 638612000503382504, guid: 0eced2f87f87381429310188dd36ba8e, type: 3}
