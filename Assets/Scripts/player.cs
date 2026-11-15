@@ -19,13 +19,13 @@ public class player : MonoBehaviour
     private SpriteRenderer[] sprites;
     private shot[] shots;
 
-    public int score = 0;
+    [NonSerialized] public int score = 0;
     
     public UnityEvent pause_event;
     public UnityEvent tutorial_event;
     public bool tutorial_on = true;
     
-    public Vector2 start_pos;
+    [NonSerialized] public Vector2 start_pos;
     
     public int lives = 3;
     public int bombs = 3;

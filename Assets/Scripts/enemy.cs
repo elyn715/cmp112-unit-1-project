@@ -77,7 +77,6 @@ public class enemy : MonoBehaviour
         if (randomize_colour)
         {
             int random_colour = Random.Range(0, colours.Length - 1);
-            //Color random_colour = new Color(Random.Range(0F, 1F), Random.Range(0F, 1F), Random.Range(0F, 1F));
             GetComponentInChildren<SpriteRenderer>().color = colours[random_colour];
         }
     }

@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.U2D.Physics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.Serialization;
@@ -87,6 +89,10 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
 {
     public Vector3 spawn_pos;
     public enemy spawn_enemy;
+    
+    public int enemies_to_spawn;
+    public float delay_between_spawn;
+    
     public float timestamp;
     
     public item_details item_data;
@@ -98,13 +104,17 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
     private bool has_spawned;
 
     public bool get_state(){return has_spawned;}
-    public spawn_event(Vector3 pos, enemy e, int items, bool bomb, bool life, float time, EnemyShootType shot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
+    public spawn_event(Vector3 pos, enemy e, int num, float interval, int items, bool bomb, bool life, float time, EnemyShootType shot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
         bool flip,  float paras, float paraw, float parah,
         float quadw, float quadstop,
         float vstop,  float vwait)
     {
         spawn_pos = pos;
         spawn_enemy = e;
+
+        enemies_to_spawn = num;
+        delay_between_spawn = interval;
+        
         timestamp = time;
         
         move_type = move;
@@ -157,9 +167,12 @@ public class stage_content : MonoBehaviour
     public player player;
     
     private List<bool> spawn_state = new List<bool>();
-
+    
     public GameObject bomb;
     public GameObject life;
+    
+    private List<int> num_spawned_from_event = new List<int>();
+    private List<bool> has_active_timer = new List<bool>();
     
     void Start()
     {
@@ -172,31 +185,58 @@ public class stage_content : MonoBehaviour
         foreach(spawn_event e in waves)
         {
             spawn_state.Add(e.get_state());
+            num_spawned_from_event.Add(0);
+            has_active_timer.Add(false);
         }
+    }
+
+    IEnumerator start_spawn_timer(float delay, int index)
+    {
+        has_active_timer[index] = true;
+        yield return new WaitForSeconds(delay);
+        has_active_timer[index] = false;
     }
     
     void FixedUpdate()
     {
         if (stage_running)
         {
-            int index = 0;
-            foreach (spawn_event spawn in waves)
+            //for each active spawn event, if there is no active timer, spawn an enemy and increment count
+            //if count = spawn details count, deavtivate the event
+
+            for (int i = 0; i < waves.Count; ++i)
             {
-                if (!spawn_state[index] && start_time + spawn.timestamp <= Time.time)
+                if (!spawn_state[i] && start_time + waves[i].timestamp <= Time.time)
                 {
-                    spawn_state[index] = true;
-                    enemy new_enemy = Instantiate(spawn.spawn_enemy, this.transform).GetComponent<enemy>();
-                    new_enemy.transform.position += spawn.spawn_pos;
-                    new_enemy.move_type = spawn.move_type;
-                    new_enemy.move_data = spawn.move_data;
-                    new_enemy.shot_type = spawn.shot_type;
-                    new_enemy.shot_data = spawn.shot_data;
-                    new_enemy.GetComponentInChildren<enemy_collide>().item_data = spawn.item_data;
-                    if(spawn.shot_type == EnemyShootType.PLAYER_FIXED) new_enemy.shot_target = player.transform.position;
+                    spawn_state[i] = true;
                 }
-                ++index;
+                
+                //If the event has been set off and there are still enemies to spawn
+                if (spawn_state[i] && waves[i].enemies_to_spawn != num_spawned_from_event[i])
+                {
+                    if (num_spawned_from_event[i] == 0) Debug.Log("starting event " + i);
+                    //Check for active timer
+                    if (!has_active_timer[i])
+                    {
+                        //spawn enemy, start timer, increment count
+                        Debug.Log("spawning enemy");
+                        enemy new_enemy = Instantiate(waves[i].spawn_enemy, transform).GetComponent<enemy>();
+                        new_enemy.transform.position += waves[i].spawn_pos;
+                        new_enemy.move_type = waves[i].move_type;
+                        new_enemy.move_data = waves[i].move_data;
+                        new_enemy.shot_type = waves[i].shot_type;
+                        new_enemy.shot_data = waves[i].shot_data;
+                        new_enemy.GetComponentInChildren<enemy_collide>().item_data = waves[i].item_data;
+                        if (waves[i].shot_type == EnemyShootType.PLAYER_FIXED)
+                            new_enemy.shot_target = player.transform.position;
+
+                        StartCoroutine(start_spawn_timer(waves[i].delay_between_spawn, i));
+                        num_spawned_from_event[i] += 1;
+                    }
+                }
             }
             
+            //Update position of player follow enemies
             enemy[] enemies = GetComponentsInChildren<enemy>();
             foreach (enemy e in enemies)
             {
