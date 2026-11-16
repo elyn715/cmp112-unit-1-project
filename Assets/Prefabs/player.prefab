@@ -99,12 +99,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  tutorial_event:
+  restart_event:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2246016169193389699, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
-        m_TargetAssemblyTypeName: tutorial_manager, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 5475620351878761064, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
+        m_TargetAssemblyTypeName: stage_manager, Assembly-CSharp
+        m_MethodName: restart_button
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -114,7 +114,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  tutorial_on: 1
   lives: 3
   bombs: 3
   respawnTimer: 1000

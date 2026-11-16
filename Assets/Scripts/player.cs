@@ -22,8 +22,7 @@ public class player : MonoBehaviour
     [NonSerialized] public int score = 0;
     
     public UnityEvent pause_event;
-    public UnityEvent tutorial_event;
-    public bool tutorial_on = true;
+    public UnityEvent restart_event;
     
     [NonSerialized] public Vector2 start_pos;
     
@@ -48,19 +47,6 @@ public class player : MonoBehaviour
         
         shots = gameObject.GetComponentsInChildren<shot>();
         
-        //this is for the tutorial, can be improved
-        if (SceneManager.GetActiveScene().buildIndex == 1)
-        {
-            foreach (SpriteRenderer sprite in sprites)
-            {
-                sprite.enabled = false;
-            }
-        }
-        else
-        {
-            tutorial_on = false;
-        }
-        
         start_pos = transform.position;
         
         if(!hitbox_sprite) Debug.Log("hitbox not found");
@@ -81,26 +67,9 @@ public class player : MonoBehaviour
 
     void OnShoot(InputValue value)
     {
-        if (tutorial_on)
+        foreach (shot shot in shots)
         {
-            tutorial_event.Invoke();
-            tutorial_on = false;
-            foreach (SpriteRenderer sprite in sprites)
-            {
-                if(sprite.name != "hitbox") sprite.enabled = true;
-            }
-            transform.position = start_pos;
-            foreach (shot shot in shots)
-            {
-                shot.reset_pos();
-            }
-        }
-        else
-        {
-            foreach (shot shot in shots)
-            {
-                shot.is_shooting = true;
-            }
+            shot.is_shooting = true;
         }
     }
 
@@ -159,7 +128,7 @@ public class player : MonoBehaviour
     
     void FixedUpdate()
     {
-        if (tutorial_on || damage_wait_pending)
+        if (damage_wait_pending)
         {
             move_x = 0;
             move_y = 0;
@@ -264,13 +233,16 @@ public class player : MonoBehaviour
             if (lives >= 0){
                 foreach (SpriteRenderer sprite in sprites)
                 {
-                    sprite.enabled = false;
+                    if(sprite.name != "hitbox") sprite.enabled = false;
                 }
                 damage_wait_pending = true;
                 string output = $"Damage Taken";
                 Debug.Log(output);
             }
-            else Destroy(gameObject);
+            else
+            {
+                restart_event.Invoke();
+            }
         }
     }
     void timerEnded()

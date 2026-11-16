@@ -4,9 +4,14 @@ using UnityEngine.Events;
 
 public class pause_buttons : MonoBehaviour
 {
-    public UnityEvent pause_event;
+    /*public UnityEvent pause_event;
 
-    public void resume_button()
+    void Start()
+    {
+        GetComponent<Canvas>().enabled = false;
+    }*/
+    
+    /*public void resume_button()
     {
         pause_event.Invoke();
     }
@@ -20,5 +25,5 @@ public class pause_buttons : MonoBehaviour
     {
         statistics.instance.reset();
         SceneManager.LoadScene(0);
-    }
+    }*/
 }

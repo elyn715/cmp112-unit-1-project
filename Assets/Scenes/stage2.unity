@@ -130,7 +130,7 @@ PrefabInstance:
     - target: {fileID: 354848541069543901, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 131506872}
+      objectReference: {fileID: 1770681300}
     - target: {fileID: 354848541069543901, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: restart_button
@@ -258,32 +258,29 @@ PrefabInstance:
     - target: {fileID: 4381529640323244039, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 131506872}
+      objectReference: {fileID: 1770681300}
     - target: {fileID: 4381529640323244039, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: resume_button
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070427451668690214, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1770681300}
+    - target: {fileID: 8070427451668690214, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: quit_to_title_button
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
---- !u!1 &131506871 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4178742597455453657, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
+--- !u!223 &131506875 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 5657581945680090641, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
   m_PrefabInstance: {fileID: 131506870}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &131506872 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2911735164518380405, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
-  m_PrefabInstance: {fileID: 131506870}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 131506871}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 329e357d29fb1014fa009c8191c8e43d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!1 &715694503
 GameObject:
   m_ObjectHideFlags: 0
@@ -482,12 +479,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1770681300}
     - target: {fileID: 8257721387413550715, guid: fb3014c271a9d7b40aa9a63eb5ee4d61, type: 3}
+      propertyPath: restart_event.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1770681300}
+    - target: {fileID: 8257721387413550715, guid: fb3014c271a9d7b40aa9a63eb5ee4d61, type: 3}
       propertyPath: tutorial_event.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1770681299}
     - target: {fileID: 8257721387413550715, guid: fb3014c271a9d7b40aa9a63eb5ee4d61, type: 3}
       propertyPath: pause_event.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: toggle_pause
+      objectReference: {fileID: 0}
+    - target: {fileID: 8257721387413550715, guid: fb3014c271a9d7b40aa9a63eb5ee4d61, type: 3}
+      propertyPath: restart_event.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: restart_button
       objectReference: {fileID: 0}
     - target: {fileID: 8257721387413550715, guid: fb3014c271a9d7b40aa9a63eb5ee4d61, type: 3}
       propertyPath: tutorial_event.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
@@ -774,7 +779,7 @@ PrefabInstance:
     - target: {fileID: 5475620351878761064, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: pause_canvas
       value: 
-      objectReference: {fileID: 131506871}
+      objectReference: {fileID: 131506875}
     - target: {fileID: 5475620351878761064, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: stage_canvas
       value: 

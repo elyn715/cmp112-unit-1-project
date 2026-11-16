@@ -45,10 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0c91084820c7b44381f51bcc497eee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  has_tutorial: 0
   paused: 0
-  pause_canvas: {fileID: 4178742597455453657, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
-  stage_canvas: {fileID: 2847079604181068605, guid: 4513560292e3eb14d9e27a9b5d964501, type: 3}
+  pause_canvas: {fileID: 5657581945680090641, guid: 0a789762daf6bb942889e43af9aed237, type: 3}
 --- !u!1 &7754001127135978536
 GameObject:
   m_ObjectHideFlags: 0
@@ -94,7 +92,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   waves: []
-  stage_running: 0
   player: {fileID: 8257721387413550715, guid: fb3014c271a9d7b40aa9a63eb5ee4d61, type: 3}
   bomb: {fileID: 638612000503382504, guid: 0eced2f87f87381429310188dd36ba8e, type: 3}
   life: {fileID: 638612000503382504, guid: 955de98e1658a4a4c91ebe73296ef32d, type: 3}
+  next_stage:
+    m_PersistentCalls:
+      m_Calls: []

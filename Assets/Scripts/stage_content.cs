@@ -170,7 +170,6 @@ public class stage_content : MonoBehaviour
 {
     [NonSerialized] public float start_time;
     [SerializeField] public List<spawn_event> waves = new List<spawn_event>();
-    public bool stage_running = false;
     public player player;
     
     private List<bool> spawn_state = new List<bool>();
@@ -185,18 +184,14 @@ public class stage_content : MonoBehaviour
     
     void Start()
     {
-        if (!GetComponentInParent<stage_manager>().has_tutorial)
-        {
-            stage_running = true;
-            start_time = Time.time;
-        }
-        
         foreach(spawn_event e in waves)
         {
             spawn_state.Add(e.get_state());
             num_spawned_from_event.Add(0);
             has_active_timer.Add(false);
         }
+
+        start_time = Time.time;
     }
 
     IEnumerator start_spawn_timer(float delay, int index)
@@ -208,66 +203,63 @@ public class stage_content : MonoBehaviour
     
     void FixedUpdate()
     {
-        if (stage_running)
+        //for each active spawn event, if there is no active timer, spawn an enemy and increment count
+        //if count = spawn details count, deavtivate the event
+        
+        //from when the last event in the list has started, check for no enemies on screen
+        //when last enemy is dead, go to next level
+
+        for (int i = 0; i < waves.Count; ++i)
         {
-            //for each active spawn event, if there is no active timer, spawn an enemy and increment count
-            //if count = spawn details count, deavtivate the event
-            
-            //from when the last event in the list has started, check for no enemies on screen
-            //when last enemy is dead, go to next level
-
-            for (int i = 0; i < waves.Count; ++i)
+            if (!spawn_state[i] && start_time + waves[i].timestamp <= Time.time)
             {
-                if (!spawn_state[i] && start_time + waves[i].timestamp <= Time.time)
+                spawn_state[i] = true;
+            }
+            
+            //If the event has been set off and there are still enemies to spawn
+            if (spawn_state[i] && waves[i].enemies_to_spawn != num_spawned_from_event[i])
+            {
+                if (num_spawned_from_event[i] == 0) Debug.Log("starting event " + i);
+                //Check for active timer
+                if (!has_active_timer[i])
                 {
-                    spawn_state[i] = true;
-                }
-                
-                //If the event has been set off and there are still enemies to spawn
-                if (spawn_state[i] && waves[i].enemies_to_spawn != num_spawned_from_event[i])
-                {
-                    if (num_spawned_from_event[i] == 0) Debug.Log("starting event " + i);
-                    //Check for active timer
-                    if (!has_active_timer[i])
-                    {
-                        //spawn enemy, start timer, increment count
-                        Debug.Log("spawning enemy");
-                        enemy new_enemy = Instantiate(waves[i].spawn_enemy, transform).GetComponent<enemy>();
-                        new_enemy.transform.position += waves[i].spawn_pos;
-                        new_enemy.move_type = waves[i].move_type;
-                        new_enemy.move_data = waves[i].move_data;
-                        new_enemy.shot_type = waves[i].shot_type;
-                        new_enemy.sub_shot_type = waves[i].sub_shot_type;
-                        new_enemy.shot_data = waves[i].shot_data;
-                        new_enemy.GetComponentInChildren<enemy_collide>().item_data = waves[i].item_data;
-                        if (waves[i].shot_type == EnemyShootType.PLAYER_FIXED)
-                            new_enemy.shot_target = player.transform.position;
+                    //spawn enemy, start timer, increment count
+                    Debug.Log("spawning enemy");
+                    enemy new_enemy = Instantiate(waves[i].spawn_enemy, transform).GetComponent<enemy>();
+                    new_enemy.transform.position += waves[i].spawn_pos;
+                    new_enemy.move_type = waves[i].move_type;
+                    new_enemy.move_data = waves[i].move_data;
+                    new_enemy.shot_type = waves[i].shot_type;
+                    new_enemy.sub_shot_type = waves[i].sub_shot_type;
+                    new_enemy.shot_data = waves[i].shot_data;
+                    new_enemy.GetComponentInChildren<enemy_collide>().item_data = waves[i].item_data;
+                    if (waves[i].shot_type == EnemyShootType.PLAYER_FIXED)
+                        new_enemy.shot_target = player.transform.position;
 
-                        StartCoroutine(start_spawn_timer(waves[i].delay_between_spawn, i));
-                        num_spawned_from_event[i] += 1;
-                    }
+                    StartCoroutine(start_spawn_timer(waves[i].delay_between_spawn, i));
+                    num_spawned_from_event[i] += 1;
                 }
             }
-            
-            //Update position of player follow enemies
-            enemy[] enemies = GetComponentsInChildren<enemy>();
-            foreach (enemy e in enemies)
-            {
-                if(player && (e.shot_type == EnemyShootType.PLAYER_FOLLOW || e.sub_shot_type == EnemyShootType.PLAYER_FOLLOW)) e.shot_target = player.transform.position;
-            }
-            
-            //check for stage end
-            if (waves.Count != 0 && spawn_state[waves.Count - 1])
-            {
-                if (enemies.Length == 0) StartCoroutine(stage_transition());
-            }
         }
-
-        IEnumerator stage_transition()
+        
+        //Update position of player follow enemies
+        enemy[] enemies = GetComponentsInChildren<enemy>();
+        foreach (enemy e in enemies)
         {
-            yield return new WaitForSeconds(2);
-            next_stage.Invoke();
+            if(player && (e.shot_type == EnemyShootType.PLAYER_FOLLOW || e.sub_shot_type == EnemyShootType.PLAYER_FOLLOW)) e.shot_target = player.transform.position;
         }
+        
+        //check for stage end
+        if (waves.Count != 0 && spawn_state[waves.Count - 1])
+        {
+            if (enemies.Length == 0) StartCoroutine(stage_transition());
+        }
+    }
+    
+    IEnumerator stage_transition()
+    {
+        yield return new WaitForSeconds(2);
+        next_stage.Invoke();
     }
 }
 
