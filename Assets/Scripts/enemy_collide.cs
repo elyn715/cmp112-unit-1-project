@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public class enemy_collide : MonoBehaviour
 {
-    private bool feedback_running = false;
+    [NonSerialized] public bool feedback_running = false;
     private SpriteRenderer renderer;
     private ParticleSystem particles;
     [NonSerialized] public item_details item_data;
@@ -16,8 +16,15 @@ public class enemy_collide : MonoBehaviour
         renderer = GetComponentInChildren<SpriteRenderer>();
         particles = GetComponentInParent<ParticleSystem>();
     }
+
+    /*IEnumerator feedback_delay(float delay)
+    {
+        feedback_running = true;
+        yield return new WaitForSeconds(delay);
+        feedback_running = false;
+    }*/
     
-    IEnumerator damage_feedback()
+    /*IEnumerator damage_feedback()
     {
         feedback_running = true;
         Color base_color = renderer.color;
@@ -26,7 +33,15 @@ public class enemy_collide : MonoBehaviour
         renderer.color = base_color;
         yield return new WaitForSeconds(0.005f);
         feedback_running = false;
-    }
+    }*/
+
+    /*void FixedUpdate()
+    {
+        if (feedback_running)
+        {
+            
+        }
+    }*/
     
     void OnTriggerEnter2D(Collider2D collision)
     {
@@ -55,12 +70,21 @@ public class enemy_collide : MonoBehaviour
                     
                     is_active = false;
                     renderer.enabled = false;
-                    GetComponent<CircleCollider2D>().enabled = false;
+                    if(GetComponent<CircleCollider2D>()) GetComponent<CircleCollider2D>().enabled = false;
+                    //Extra colliders, for bosses
+                    if (GetComponent<BoxCollider2D>())
+                    {
+                        foreach (BoxCollider2D box in GetComponents<BoxCollider2D>())
+                        {
+                            box.enabled = false;
+                        }
+                    }
+                    
                     Debug.Log("destroying enemy");
                 }
                 else if(!feedback_running)
                 {
-                    StartCoroutine(damage_feedback());
+                    StartCoroutine(GetComponentInParent<enemy>().damage_feedback());
                 }
             }
         }

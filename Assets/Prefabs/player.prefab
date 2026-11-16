@@ -162,8 +162,8 @@ MonoBehaviour:
   tutorial_on: 1
   lives: 3
   bombs: 3
-  respawnTimer: 2500
-  damage_cooldown: 1
+  respawnTimer: 1000
+  damage_cooldown: 1.5
 --- !u!1 &5178251785128584132
 GameObject:
   m_ObjectHideFlags: 0
@@ -278,7 +278,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6111756604791527300, guid: 4117939cc8879b0419421d1fe50d63c1, type: 3}
       propertyPath: shot_offset
-      value: 10
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6813257609139452670, guid: 4117939cc8879b0419421d1fe50d63c1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -352,7 +352,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6111756604791527300, guid: 4117939cc8879b0419421d1fe50d63c1, type: 3}
       propertyPath: shot_offset
-      value: 10
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6813257609139452670, guid: 4117939cc8879b0419421d1fe50d63c1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -426,7 +426,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6111756604791527300, guid: 4117939cc8879b0419421d1fe50d63c1, type: 3}
       propertyPath: shot_offset
-      value: 10
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6813257609139452670, guid: 4117939cc8879b0419421d1fe50d63c1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -500,7 +500,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6111756604791527300, guid: 4117939cc8879b0419421d1fe50d63c1, type: 3}
       propertyPath: shot_offset
-      value: 10
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6813257609139452670, guid: 4117939cc8879b0419421d1fe50d63c1, type: 3}
       propertyPath: m_LocalPosition.x

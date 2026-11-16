@@ -6,9 +6,10 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.Serialization;
+using UnityEngine.Events;
 
 public enum EnemyMoveType {LINEAR_H, LINEAR_V, QUADRATIC, PARAMETRIC}
-public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPLE}
+public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPLE}
 
 [System.Serializable] public struct move_details
 {
@@ -87,6 +88,8 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
 }
 [System.Serializable] public struct spawn_event
 {
+    public string event_name;
+    
     public Vector3 spawn_pos;
     public enemy spawn_enemy;
     
@@ -97,6 +100,7 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
     
     public item_details item_data;
     public EnemyShootType shot_type;
+    public EnemyShootType sub_shot_type;
     public shoot_details shot_data;
     public EnemyMoveType move_type;
     public move_details move_data;
@@ -104,11 +108,13 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
     private bool has_spawned;
 
     public bool get_state(){return has_spawned;}
-    public spawn_event(Vector3 pos, enemy e, int num, float interval, int items, bool bomb, bool life, float time, EnemyShootType shot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
+    public spawn_event(string name, Vector3 pos, enemy e, int num, float interval, int items, bool bomb, bool life, float time, EnemyShootType shot, EnemyShootType subshot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
         bool flip,  float paras, float paraw, float parah,
         float quadw, float quadstop,
         float vstop,  float vwait)
     {
+        event_name = name;
+        
         spawn_pos = pos;
         spawn_enemy = e;
 
@@ -119,6 +125,7 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
         
         move_type = move;
         shot_type = shot;
+        sub_shot_type = subshot;
         
         has_spawned = false;
 
@@ -173,6 +180,8 @@ public class stage_content : MonoBehaviour
     
     private List<int> num_spawned_from_event = new List<int>();
     private List<bool> has_active_timer = new List<bool>();
+
+    public UnityEvent next_stage;
     
     void Start()
     {
@@ -203,6 +212,9 @@ public class stage_content : MonoBehaviour
         {
             //for each active spawn event, if there is no active timer, spawn an enemy and increment count
             //if count = spawn details count, deavtivate the event
+            
+            //from when the last event in the list has started, check for no enemies on screen
+            //when last enemy is dead, go to next level
 
             for (int i = 0; i < waves.Count; ++i)
             {
@@ -225,6 +237,7 @@ public class stage_content : MonoBehaviour
                         new_enemy.move_type = waves[i].move_type;
                         new_enemy.move_data = waves[i].move_data;
                         new_enemy.shot_type = waves[i].shot_type;
+                        new_enemy.sub_shot_type = waves[i].sub_shot_type;
                         new_enemy.shot_data = waves[i].shot_data;
                         new_enemy.GetComponentInChildren<enemy_collide>().item_data = waves[i].item_data;
                         if (waves[i].shot_type == EnemyShootType.PLAYER_FIXED)
@@ -240,8 +253,20 @@ public class stage_content : MonoBehaviour
             enemy[] enemies = GetComponentsInChildren<enemy>();
             foreach (enemy e in enemies)
             {
-                if(player && e.shot_type == EnemyShootType.PLAYER_FOLLOW) e.shot_target = player.transform.position;
+                if(player && (e.shot_type == EnemyShootType.PLAYER_FOLLOW || e.sub_shot_type == EnemyShootType.PLAYER_FOLLOW)) e.shot_target = player.transform.position;
             }
+            
+            //check for stage end
+            if (waves.Count != 0 && spawn_state[waves.Count - 1])
+            {
+                if (enemies.Length == 0) StartCoroutine(stage_transition());
+            }
+        }
+
+        IEnumerator stage_transition()
+        {
+            yield return new WaitForSeconds(2);
+            next_stage.Invoke();
         }
     }
 }

@@ -9,10 +9,10 @@ public class stage_manager : MonoBehaviour
     public GameObject pause_canvas;
     public GameObject stage_canvas;
     
-    void Update()
+    public void next_stage()
     {
-        if (Keyboard.current.enterKey.wasPressedThisFrame && !paused)
-        {
+        //if (Keyboard.current.enterKey.wasPressedThisFrame && !paused)
+        //{
             //Move to next stage
             int next_scene = SceneManager.GetActiveScene().buildIndex + 1;
             if (next_scene >= SceneManager.sceneCountInBuildSettings)
@@ -21,7 +21,7 @@ public class stage_manager : MonoBehaviour
             }
             
             SceneManager.LoadScene(next_scene);
-        }
+        //}
     }
 
     public void toggle_pause()

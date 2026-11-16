@@ -2265,8 +2265,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1692009493
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_RenderMode: 0
@@ -2312,10 +2312,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55b0fa527eae3814eadbdc60ea67bde6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  shot_offset: 10
-  health: 100
-  speed: 2
+  shot_offset: 25
+  health: 150
+  speed: 3
   bullet: {fileID: 7702407191789642928, guid: bd5615faea3e0e04e891e68a74060734, type: 3}
+  randomize_rotation: 1
+  randomize_colour: 1
 --- !u!1 &8225399631637411730
 GameObject:
   m_ObjectHideFlags: 0
@@ -2503,8 +2505,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1104822383
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 4801227835787818748, guid: 949c10ebf60b01444b551c11a1b8e8a3, type: 3}

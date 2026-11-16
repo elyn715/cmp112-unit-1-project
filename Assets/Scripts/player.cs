@@ -34,7 +34,7 @@ public class player : MonoBehaviour
     private Collider2D last_collided_object;
     
     private bool is_cooldown = false;
-    public int damage_cooldown = 1;
+    public float damage_cooldown = 1;
     
     void Start()
     {

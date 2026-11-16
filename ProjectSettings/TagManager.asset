@@ -47,6 +47,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: particles
+    uniqueID: 2602957803
+    locked: 0
+  - name: bullets
+    uniqueID: 3417164897
+    locked: 0
+  - name: enemy_sprites
+    uniqueID: 3190144913
+    locked: 0
   m_RenderingLayers:
   - Default
   m_MigratedRenderPipelines: []
