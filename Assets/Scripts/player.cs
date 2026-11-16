@@ -35,11 +35,20 @@ public class player : MonoBehaviour
     
     private bool is_cooldown = false;
     public float damage_cooldown = 1;
+
+    private bool showing_hitbox = false;
+    private SpriteRenderer hitbox_sprite;
     
     void Start()
     {
         sprites = gameObject.GetComponentsInChildren<SpriteRenderer>();
+        
+        hitbox_sprite = transform.Find("hitbox").GetComponent<SpriteRenderer>();
+        hitbox_sprite.enabled = false;
+        
         shots = gameObject.GetComponentsInChildren<shot>();
+        
+        //this is for the tutorial, can be improved
         if (SceneManager.GetActiveScene().buildIndex == 1)
         {
             foreach (SpriteRenderer sprite in sprites)
@@ -53,6 +62,8 @@ public class player : MonoBehaviour
         }
         
         start_pos = transform.position;
+        
+        if(!hitbox_sprite) Debug.Log("hitbox not found");
     }
     
     void OnMove(InputValue movementvalue)
@@ -76,7 +87,7 @@ public class player : MonoBehaviour
             tutorial_on = false;
             foreach (SpriteRenderer sprite in sprites)
             {
-                sprite.enabled = true;
+                if(sprite.name != "hitbox") sprite.enabled = true;
             }
             transform.position = start_pos;
             foreach (shot shot in shots)
@@ -93,6 +104,12 @@ public class player : MonoBehaviour
         }
     }
 
+    void OnShowHitbox(InputValue value)
+    {
+        showing_hitbox = true;
+        hitbox_sprite.enabled = true;
+    }
+    
     void OnPause(InputValue value)
     {
         pause_event.Invoke();
@@ -147,7 +164,10 @@ public class player : MonoBehaviour
             move_x = 0;
             move_y = 0;
         }
-        Vector3 movement = new Vector3(move_x * speed * Time.deltaTime, move_y * speed * Time.deltaTime, 0.0f);
+
+        float speed_to_use = speed;
+        if (showing_hitbox) speed_to_use /= 2.0f;
+        Vector3 movement = new Vector3(move_x * speed_to_use * Time.deltaTime, move_y * speed_to_use * Time.deltaTime, 0.0f);
         transform.position += movement;
 
         //Save the movement for the shot
@@ -200,6 +220,13 @@ public class player : MonoBehaviour
             }
             damage_wait_pending = false;
             StartCoroutine(respawn_cooldown());
+        }
+        
+        //Hitbox showing
+        if (showing_hitbox && !Keyboard.current.ctrlKey.isPressed)
+        {
+            showing_hitbox = false;
+            hitbox_sprite.enabled = false;
         }
     }
     
