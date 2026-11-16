@@ -8,11 +8,13 @@ public class enemy : MonoBehaviour
 {
     public int shot_offset = 5;
     private int offset_counter = 0;
+    private int sub_offset_counter = 0;
     public int health = 500;
     [NonSerialized] public EnemyMoveType move_type;
     [NonSerialized] public move_details move_data;
     [NonSerialized] public EnemyShootType shot_type;
-    [NonSerialized]  public shoot_details shot_data;
+    [NonSerialized] public EnemyShootType sub_shot_type;
+    [NonSerialized] public shoot_details shot_data;
     public float speed = 5.0f;
 
     private Vector2 origin_offset;
@@ -57,12 +59,14 @@ public class enemy : MonoBehaviour
         origin_offset = -transform.position;
         if (move_type == EnemyMoveType.QUADRATIC)
         {
-            double starting_x = Math.Sqrt(transform.position.y) / move_data.quad_w;
+            double starting_x = Math.Sqrt(transform.position.y + move_data.quad_stop) / move_data.quad_w;
             Vector3 start = new Vector3((float)starting_x, move_data.quad_stop, 0.0f);
             if (move_data.mirror) transform.position += start;
             else transform.position -= start;
         }
         para_start_time = Time.time;
+        
+        //FIX THESE FOR SUB TYPE--------------------------------
         if (shot_type == EnemyShootType.VERTICAL) shot_target = new Vector2(transform.position.x, globlal_screen_boundaries.bottom_y_edge);
         else if(shot_type == EnemyShootType.PLAYER_FIXED) shot_target = GetComponentInParent<stage_content>().player.transform.position;
         
@@ -77,14 +81,18 @@ public class enemy : MonoBehaviour
         if (randomize_colour)
         {
             int random_colour = Random.Range(0, colours.Length - 1);
-            //Color random_colour = new Color(Random.Range(0F, 1F), Random.Range(0F, 1F), Random.Range(0F, 1F));
             GetComponentInChildren<SpriteRenderer>().color = colours[random_colour];
         }
     }
 
+    //move this to fixed
     void Update()
     {
-        if (shot_type == EnemyShootType.SPIN && GetComponentInChildren<enemy_collide>().is_active) transform.eulerAngles += new Vector3(0.0f, 0.0f, shot_data.spin_speed * Time.deltaTime);
+        if ((shot_type == EnemyShootType.SPIN || sub_shot_type == EnemyShootType.SPIN) && GetComponentInChildren<enemy_collide>().is_active)
+        {
+            transform.eulerAngles += new Vector3(0.0f, 0.0f, shot_data.spin_speed * Time.deltaTime);
+            fixed_z_rotation = transform.eulerAngles.z;
+        }
     }
 
     void bounds_check()
@@ -96,38 +104,61 @@ public class enemy : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    private void manage_shooting(EnemyShootType type, bool sub = false)
+    {
+        int offset_compare = shot_offset;
+        if (type == EnemyShootType.MULTIPLE) offset_compare += shot_offset * 3;
+        else if (type == EnemyShootType.SPIN) offset_compare -= 5;
+        if (offset_compare <= 0) offset_compare = 1;
+        //Debug.Log("offset compare is " + offset_compare + ", offset_counter is " + offset_counter);
+        if (offset_compare == offset_counter)
+        {
+            if (type == EnemyShootType.MULTIPLE)
+            {
+                float difference = 360.0f / shot_data.shots;
+                for (int i = 0; i < shot_data.shots; ++i)
+                {
+                    transform.eulerAngles = new Vector3(0.0f, 0.0f, difference * i);
+                    //transform.eulerAngles += new Vector3(0.0f, 0.0f, difference * i);
+                    GameObject multiple_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
+                    multiple_bullet.GetComponent<bullet>().set_direction(transform.right);
+                }
+                transform.eulerAngles = new Vector3(0, 0, fixed_z_rotation);
+            }
+            else
+            {
+                GameObject new_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
+                                
+                if (type == EnemyShootType.VERTICAL) shot_target = new Vector3(transform.position.x, globlal_screen_boundaries.bottom_y_edge);
+                else if (type == EnemyShootType.SPIN) shot_target = transform.position + transform.right;
+                
+                Vector3 direction = (shot_target - transform.position).normalized;
+                new_bullet.GetComponent<bullet>().set_direction(direction);
+            }
+
+            if (sub) sub_offset_counter = 0;
+            else offset_counter = 0;
+            
+        }
+        else
+        {
+            if (sub) ++sub_offset_counter;
+            else ++offset_counter;
+        }
+    }
     
     private void FixedUpdate()
     {
         //if not dead
         if (GetComponentInChildren<enemy_collide>().is_active)
         {
-            if (shot_offset == offset_counter)
+            manage_shooting(shot_type);
+            if (sub_shot_type != EnemyShootType.NONE)
             {
-                if (shot_type == EnemyShootType.MULTIPLE)
-                {
-                    float difference = 360.0f / shot_data.shots;
-                    for (int i = 0; i < shot_data.shots; ++i)
-                    {
-                        transform.eulerAngles = new Vector3(0.0f, 0.0f, difference * i);
-                        GameObject multiple_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
-                        multiple_bullet.GetComponent<bullet>().set_direction(transform.right);
-                    }
-                    transform.eulerAngles = new Vector3(0, 0, fixed_z_rotation);
-                }
-                else
-                {
-                    GameObject new_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
-                                    
-                    if (shot_type == EnemyShootType.VERTICAL) shot_target = new Vector3(transform.position.x, globlal_screen_boundaries.bottom_y_edge);
-                    else if (shot_type == EnemyShootType.SPIN) shot_target = transform.position + transform.right;
-                    
-                    Vector3 direction = (shot_target - transform.position).normalized;
-                    new_bullet.GetComponent<bullet>().set_direction(direction);
-                }
-                offset_counter = 0;
+                manage_shooting(sub_shot_type, true);
             }
-            else ++offset_counter;
+            //if sub type set, do that
             
             switch (move_type)
             {
@@ -136,6 +167,10 @@ public class enemy : MonoBehaviour
                     //y = scale (sin time)(cos time)
                     double testx = move_data.para_scale * Math.Sin(Time.time - para_start_time) * move_data.para_w;
                     double testy = move_data.para_scale * Math.Sin(Time.time - para_start_time) * Math.Cos(Time.time - para_start_time) * move_data.para_h;
+
+                    testx *= speed / 8.0f;
+                    testy *= speed / 8.0f;
+                    
                     if (move_data.mirror)
                     {
                         transform.position = new Vector3(-(float)testx - origin_offset.x, (float)testy - origin_offset.y, 0.0f);
@@ -148,7 +183,7 @@ public class enemy : MonoBehaviour
                 
                 case EnemyMoveType.QUADRATIC:
                     float x = transform.position.x + origin_offset.x;
-                    float new_y = ((x * move_data.quad_w) * (x * move_data.quad_w)) - move_data.quad_stop;
+                    float new_y = ((x * move_data.quad_w) * (x * move_data.quad_w)) + move_data.quad_stop;
                     transform.position = new Vector2(transform.position.x, new_y);
                     Vector3 next_x = new Vector3(speed, 0.0f, 0.0f) * Time.deltaTime;
                     if (move_data.mirror) transform.position -= next_x;
@@ -200,5 +235,17 @@ public class enemy : MonoBehaviour
         {
             if(GetComponent<ParticleSystem>().particleCount == 0) Destroy(gameObject);
         }
+    }
+    
+    public IEnumerator damage_feedback()
+    {
+        GetComponentInChildren<enemy_collide>().feedback_running = true;
+        SpriteRenderer renderer = GetComponentInChildren<SpriteRenderer>();
+        Color base_color = renderer.color;
+        renderer.color = Color.grey;
+        yield return new WaitForSeconds(0.005f);
+        renderer.color = base_color;
+        yield return new WaitForSeconds(0.005f);
+        GetComponentInChildren<enemy_collide>().feedback_running = false;
     }
 }

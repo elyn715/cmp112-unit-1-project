@@ -2312,9 +2312,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55b0fa527eae3814eadbdc60ea67bde6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  shot_offset: 10
-  health: 500
-  speed: 0
+  shot_offset: 5
+  health: 5000
+  speed: 1
   bullet: {fileID: 7702407191789642928, guid: bd5615faea3e0e04e891e68a74060734, type: 3}
   randomize_rotation: 0
   randomize_colour: 0
@@ -2562,8 +2562,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1104822383
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -5912800498141821623, guid: 6624b46ce41d79c4db7f1f3b800115b5, type: 3}

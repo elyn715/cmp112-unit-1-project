@@ -19,13 +19,12 @@ public class player : MonoBehaviour
     private SpriteRenderer[] sprites;
     private shot[] shots;
 
-    public int score = 0;
+    [NonSerialized] public int score = 0;
     
     public UnityEvent pause_event;
-    public UnityEvent tutorial_event;
-    public bool tutorial_on = true;
+    public UnityEvent restart_event;
     
-    public Vector2 start_pos;
+    [NonSerialized] public Vector2 start_pos;
     
     public int lives = 3;
     public int bombs = 3;
@@ -34,25 +33,23 @@ public class player : MonoBehaviour
     private Collider2D last_collided_object;
     
     private bool is_cooldown = false;
-    public int damage_cooldown = 1;
+    public float damage_cooldown = 1;
+
+    private bool showing_hitbox = false;
+    private SpriteRenderer hitbox_sprite;
     
     void Start()
     {
         sprites = gameObject.GetComponentsInChildren<SpriteRenderer>();
+        
+        hitbox_sprite = transform.Find("hitbox").GetComponent<SpriteRenderer>();
+        hitbox_sprite.enabled = false;
+        
         shots = gameObject.GetComponentsInChildren<shot>();
-        if (SceneManager.GetActiveScene().buildIndex == 1)
-        {
-            foreach (SpriteRenderer sprite in sprites)
-            {
-                sprite.enabled = false;
-            }
-        }
-        else
-        {
-            tutorial_on = false;
-        }
         
         start_pos = transform.position;
+        
+        if(!hitbox_sprite) Debug.Log("hitbox not found");
     }
     
     void OnMove(InputValue movementvalue)
@@ -70,29 +67,18 @@ public class player : MonoBehaviour
 
     void OnShoot(InputValue value)
     {
-        if (tutorial_on)
+        foreach (shot shot in shots)
         {
-            tutorial_event.Invoke();
-            tutorial_on = false;
-            foreach (SpriteRenderer sprite in sprites)
-            {
-                sprite.enabled = true;
-            }
-            transform.position = start_pos;
-            foreach (shot shot in shots)
-            {
-                shot.reset_pos();
-            }
-        }
-        else
-        {
-            foreach (shot shot in shots)
-            {
-                shot.is_shooting = true;
-            }
+            shot.is_shooting = true;
         }
     }
 
+    void OnShowHitbox(InputValue value)
+    {
+        showing_hitbox = true;
+        hitbox_sprite.enabled = true;
+    }
+    
     void OnPause(InputValue value)
     {
         pause_event.Invoke();
@@ -142,12 +128,15 @@ public class player : MonoBehaviour
     
     void FixedUpdate()
     {
-        if (tutorial_on || damage_wait_pending)
+        if (damage_wait_pending)
         {
             move_x = 0;
             move_y = 0;
         }
-        Vector3 movement = new Vector3(move_x * speed * Time.deltaTime, move_y * speed * Time.deltaTime, 0.0f);
+
+        float speed_to_use = speed;
+        if (showing_hitbox) speed_to_use /= 2.0f;
+        Vector3 movement = new Vector3(move_x * speed_to_use * Time.deltaTime, move_y * speed_to_use * Time.deltaTime, 0.0f);
         transform.position += movement;
 
         //Save the movement for the shot
@@ -201,6 +190,13 @@ public class player : MonoBehaviour
             damage_wait_pending = false;
             StartCoroutine(respawn_cooldown());
         }
+        
+        //Hitbox showing
+        if (showing_hitbox && !Keyboard.current.ctrlKey.isPressed)
+        {
+            showing_hitbox = false;
+            hitbox_sprite.enabled = false;
+        }
     }
     
     IEnumerator respawn_cooldown()
@@ -237,13 +233,16 @@ public class player : MonoBehaviour
             if (lives >= 0){
                 foreach (SpriteRenderer sprite in sprites)
                 {
-                    sprite.enabled = false;
+                    if(sprite.name != "hitbox") sprite.enabled = false;
                 }
                 damage_wait_pending = true;
                 string output = $"Damage Taken";
                 Debug.Log(output);
             }
-            else Destroy(gameObject);
+            else
+            {
+                restart_event.Invoke();
+            }
         }
     }
     void timerEnded()
