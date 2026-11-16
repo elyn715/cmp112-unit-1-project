@@ -7,6 +7,8 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using System.Threading;
 using UnityEngine.TextCore.LowLevel;
+using UnityEngine.UI;
+using TMPro;
 
 public class player : MonoBehaviour
 {
@@ -26,6 +28,9 @@ public class player : MonoBehaviour
     public bool tutorial_on = true;
     
     public Vector2 start_pos;
+    public TextMeshProUGUI livesText;
+    public TextMeshProUGUI bombText;
+    public TextMeshProUGUI scoreText;
     
     public int lives = 3;
     public int bombs = 3;
@@ -53,6 +58,9 @@ public class player : MonoBehaviour
         }
         
         start_pos = transform.position;
+        livesText.text = "Lives: " + lives.ToString();
+        bombText.text = "Bombs: " + bombs.ToString();
+        scoreText.text = "Score: " + score.ToString(); 
     }
     
     void OnMove(InputValue movementvalue)
@@ -104,6 +112,7 @@ public class player : MonoBehaviour
         {
             Debug.Log("using bomb");
             statistics.instance.use_bomb();
+            bombText.text = "Bombs: " + bombs.ToString();
         }
     }
 
@@ -216,11 +225,13 @@ public class player : MonoBehaviour
         {
             ++bombs;
             Debug.Log("player gained bomb, bombs is now " + bombs);
+            bombText.text = "Bombs: " + bombs.ToString();
         }
         else if (collision.tag == "life")
         {
             ++lives;
             Debug.Log("player gained life, lives is now " + lives);
+            livesText.text = "Lives: " + lives.ToString();
         }
         else if (!is_cooldown)
         {
@@ -233,6 +244,7 @@ public class player : MonoBehaviour
             statistics.instance.lose_life();
             
             lives -= 1;
+            livesText.text = "Lives: " + lives.ToString();
             collision.enabled = false;
             if (lives >= 0){
                 foreach (SpriteRenderer sprite in sprites)
@@ -259,5 +271,6 @@ public class player : MonoBehaviour
     {
         score += 1000;
         statistics.instance.add_score(1000);
+        scoreText.text = "Score: " + score.ToString();
     }
 }
