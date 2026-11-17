@@ -16,32 +16,6 @@ public class enemy_collide : MonoBehaviour
         renderer = GetComponentInChildren<SpriteRenderer>();
         particles = GetComponentInParent<ParticleSystem>();
     }
-
-    /*IEnumerator feedback_delay(float delay)
-    {
-        feedback_running = true;
-        yield return new WaitForSeconds(delay);
-        feedback_running = false;
-    }*/
-    
-    /*IEnumerator damage_feedback()
-    {
-        feedback_running = true;
-        Color base_color = renderer.color;
-        renderer.color = Color.grey;
-        yield return new WaitForSeconds(0.005f);
-        renderer.color = base_color;
-        yield return new WaitForSeconds(0.005f);
-        feedback_running = false;
-    }*/
-
-    /*void FixedUpdate()
-    {
-        if (feedback_running)
-        {
-            
-        }
-    }*/
     
     void OnTriggerEnter2D(Collider2D collision)
     {

@@ -166,13 +166,8 @@ public class player : MonoBehaviour
             shot.move();
         }
         
-        //Check against boundaries
-        Vector3 boundary_fixed_pos = transform.position;
-        if(transform.position.x < globlal_screen_boundaries.left_x_edge) boundary_fixed_pos.x = globlal_screen_boundaries.left_x_edge;
-        else if(transform.position.x > globlal_screen_boundaries.right_x_edge) boundary_fixed_pos.x = globlal_screen_boundaries.right_x_edge;
-        if(transform.position.y > globlal_screen_boundaries.top_y_edge) boundary_fixed_pos.y = globlal_screen_boundaries.top_y_edge;
-        else if(transform.position.y < globlal_screen_boundaries.bottom_y_edge) boundary_fixed_pos.y = globlal_screen_boundaries.bottom_y_edge;
-        transform.position = boundary_fixed_pos;
+        //Screen boundary check
+        transform.position = bounds_check.fix_to_boundaries(transform.position);
         
         //Damage display delay
         if (damage_wait_pending)

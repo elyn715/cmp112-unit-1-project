@@ -6,40 +6,34 @@ using Random = UnityEngine.Random;
 
 public class enemy : MonoBehaviour
 {
-    //public int shot_offset = 5;
-    //private int offset_counter = 0;
-    //private int sub_offset_counter = 0;
-    
+    //Bullet timing
     private float shot_start_time;
     private float sub_shot_start_time;
     public float shot_delay = 0.05f;
     
-    
-    
-    public int health = 500;
+    //Movement and shooting details
     [NonSerialized] public EnemyMoveType move_type;
     [NonSerialized] public move_details move_data;
     [NonSerialized] public EnemyShootType shot_type;
     [NonSerialized] public EnemyShootType sub_shot_type;
     [NonSerialized] public shoot_details shot_data;
+    [NonSerialized] public Vector3 shot_target = new Vector2(0.0f, 0.0f);
     [NonSerialized] public bool no_spin = false;
-    public float speed = 5.0f;
-
+    private float fixed_z_rotation = 0.0f;
+    
+    //Movement specific flags
     private Vector2 origin_offset;
     private bool is_waiting_to_move = false;
     private bool has_waited = false;
     private float wait_start_time;
     private float para_start_time;
     
+    //General details
+    public float speed = 5.0f;
+    public int health = 500;
     public bullet bullet;
-
     public bool randomize_rotation = true;
     public bool randomize_colour = true;
-
-    [NonSerialized] public Vector3 shot_target = new Vector2(0.0f, 0.0f);
-
-    private float fixed_z_rotation = 0.0f;
-
     private Color[] colours =
     {
         Color.aquamarine,
@@ -67,6 +61,7 @@ public class enemy : MonoBehaviour
         origin_offset = -transform.position;
         if (move_type == EnemyMoveType.QUADRATIC)
         {
+            //Calculate starting x position from current y and equation width
             double starting_x = Math.Sqrt(transform.position.y + move_data.quad_stop) / move_data.quad_w;
             Vector3 start = new Vector3((float)starting_x, move_data.quad_stop, 0.0f);
             if (move_data.mirror) transform.position += start;
@@ -75,7 +70,7 @@ public class enemy : MonoBehaviour
         para_start_time = Time.time;
         
         //FIX THESE FOR SUB TYPE--------------------------------
-        if (shot_type == EnemyShootType.VERTICAL) shot_target = new Vector2(transform.position.x, globlal_screen_boundaries.bottom_y_edge);
+        if (shot_type == EnemyShootType.VERTICAL) shot_target = new Vector2(transform.position.x, bounds_check.bottom_y_edge);
         else if(shot_type == EnemyShootType.PLAYER_FIXED) shot_target = GetComponentInParent<stage_content>().player.transform.position;
         
         //Set random rotation
@@ -98,6 +93,7 @@ public class enemy : MonoBehaviour
 
     void Update()
     {
+        //Rotate enemy
         if ((shot_type == EnemyShootType.SPIN || sub_shot_type == EnemyShootType.SPIN) && GetComponentInChildren<enemy_collide>().is_active)
         {
             transform.eulerAngles += new Vector3(0.0f, 0.0f, shot_data.spin_speed * Time.deltaTime);
@@ -106,24 +102,17 @@ public class enemy : MonoBehaviour
         }
     }
 
-    void bounds_check()
-    {
-        float enemy_offset = 1.0f;
-        if (transform.position.x < globlal_screen_boundaries.left_x_edge  - enemy_offset || transform.position.x > globlal_screen_boundaries.right_x_edge  + enemy_offset|
-            transform.position.y > globlal_screen_boundaries.top_y_edge + enemy_offset || transform.position.y < globlal_screen_boundaries.bottom_y_edge - enemy_offset)
-        {
-            Destroy(gameObject);
-        }
-    }
-
     private void manage_shooting(EnemyShootType type, bool sub = false)
     {
+        //Calculate the delay to use - scales to balance out the bullets for multiple and spin
         float delay_to_use = shot_delay;
         if (type == EnemyShootType.MULTIPLE) delay_to_use *= 1.5f;
-        else if (type == EnemyShootType.SPIN) delay_to_use /= 2.0f;
+        else if (type == EnemyShootType.SPIN) delay_to_use /= 2.0f; 
         if (delay_to_use <= 0) delay_to_use = 0.5f;
+        
         if ((!sub && shot_start_time + delay_to_use <= Time.time) || (sub && sub_shot_start_time + delay_to_use <= Time.time))
         {
+            //Shoot
             if (type == EnemyShootType.MULTIPLE)
             {
                 float difference = 360.0f / shot_data.shots;
@@ -141,7 +130,7 @@ public class enemy : MonoBehaviour
             {
                 GameObject new_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
                                 
-                if (type == EnemyShootType.VERTICAL) shot_target = new Vector3(transform.position.x, globlal_screen_boundaries.bottom_y_edge);
+                if (type == EnemyShootType.VERTICAL) shot_target = new Vector3(transform.position.x, bounds_check.bottom_y_edge);
                 else if (type == EnemyShootType.SPIN) shot_target = transform.position + transform.right;
                 
                 Vector3 direction = (shot_target - transform.position).normalized;
@@ -236,7 +225,7 @@ public class enemy : MonoBehaviour
             //Only start checking bounds 5 seconds after spawn
             if (Time.time >= para_start_time + 5)
             {
-                bounds_check();
+                if (!bounds_check.check_boundaries(transform.position, 1.0f)) Destroy(gameObject); 
             }
         }
         else

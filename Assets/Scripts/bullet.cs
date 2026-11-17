@@ -20,17 +20,12 @@ public class bullet : MonoBehaviour
         Vector3 movement = new Vector2(direction.x * speed * Time.deltaTime, direction.y * speed * Time.deltaTime); 
         transform.position += movement;
         
-        float bullet_offset = 0.6f;
-        if (transform.position.x < globlal_screen_boundaries.left_x_edge - bullet_offset || transform.position.x > globlal_screen_boundaries.right_x_edge + bullet_offset ||
-            transform.position.y > globlal_screen_boundaries.top_y_edge  + bullet_offset || transform.position.y < globlal_screen_boundaries.bottom_y_edge - bullet_offset)
-        {
-            Destroy(gameObject);
-        }
-
         if (grow)
         {
             transform.localScale += new Vector3(speed / 100.0f, speed / 100.0f, 0.0f);
         }
+
+        if (!bounds_check.check_boundaries(transform.position, 0.6f)) Destroy(gameObject); 
     }
 
     void OnTriggerEnter2D(Collider2D collision)
