@@ -16,6 +16,7 @@ public class button_functions : MonoBehaviour
         tutorial_canvas.enabled = true;
     }
 
+    //Dismiss tutorial, load stage 1
     void OnDismiss(InputValue value)
     {
         if (tutorial_canvas.enabled)
