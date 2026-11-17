@@ -91,7 +91,7 @@ public class player : MonoBehaviour
 
     void OnBomb(InputValue value)
     {
-        if (bombs > 0)
+        if (bombs > 0 && !GetComponentInChildren<bomb>())
         {
             --bombs;
             Instantiate(bomb.gameObject, transform);
