@@ -6,7 +6,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.Serialization;
-using UnityEngine.Events;
 
 public enum EnemyMoveType {LINEAR_H, LINEAR_V, QUADRATIC, PARAMETRIC}
 public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPLE}
@@ -56,6 +55,7 @@ public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, M
 [System.Serializable] public struct shoot_details
 {
     public bool bullet_grow;
+    public float start_delay;
     
     [Header("Spin")]
     public float spin_speed;
@@ -65,12 +65,13 @@ public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, M
 
     private bullet bullet;
 
-    public shoot_details(bullet b, bool grow, float speed = 0.0f, int shotnum = 1)
+    public shoot_details(bullet b, bool grow, float delay = 0.0f, float speed = 0.0f, int shotnum = 1)
     {
         bullet = b;
         spin_speed = speed;
         shots = shotnum;
         bullet_grow = grow;
+        start_delay = delay;
     }
 }
 
@@ -119,7 +120,7 @@ public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, M
     public spawn_event(string name, Vector3 pos, enemy e, int num, float interval, int items, bool bomb, bool life, float time, bool spin, EnemyShootType shot, EnemyShootType subshot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
         bool flip,  float paras, float paraw, float parah,
         float quadw, float quadstop,
-        float vstop,  float vwait, float smod, bool final, bool grow)
+        float vstop,  float vwait, float smod, bool final, bool grow, float shotdelay)
     {
         event_name = name;
         
@@ -148,13 +149,13 @@ public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, M
         switch (shot)
         {
             case EnemyShootType.VERTICAL: case EnemyShootType.PLAYER_FIXED: case EnemyShootType.PLAYER_FOLLOW:
-                shot_data = new shoot_details(bullet, grow);
+                shot_data = new shoot_details(bullet, grow, shotdelay);
                 break;
             case EnemyShootType.SPIN:
-                shot_data = new shoot_details(bullet, grow, spinspeed);
+                shot_data = new shoot_details(bullet, grow, shotdelay, spinspeed);
                 break;
             case EnemyShootType.MULTIPLE:
-                shot_data = new shoot_details(bullet, grow, 0.0f, shotnum);
+                shot_data = new shoot_details(bullet, grow, shotdelay, 0.0f, shotnum);
                 break;
             default:
                 shot_data = new shoot_details();
@@ -193,8 +194,6 @@ public class stage_content : MonoBehaviour
     
     private List<int> num_spawned_from_event = new List<int>();
     private List<bool> has_active_timer = new List<bool>();
-
-    public UnityEvent next_stage;
 
     private bool final_enemy_set = false;
     private enemy final_enemy;
@@ -282,7 +281,7 @@ public class stage_content : MonoBehaviour
     {
         Debug.Log("STAGE TRANSITION");
         yield return new WaitForSeconds(2);
-        next_stage.Invoke();
+        GetComponentInParent<stage_manager>().next_stage();
     }
 }
 
