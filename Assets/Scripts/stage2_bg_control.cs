@@ -4,6 +4,7 @@ using UnityEngine.Rendering;
 
 public class stage2_bg_control : MonoBehaviour
 {
+    //Layers
     private Transform floor;
     private Vector3 initial_floor;
     public float floor_speed = 0.1f;
@@ -46,6 +47,7 @@ public class stage2_bg_control : MonoBehaviour
 
     void Update()
     {
+        //Move and reset if needed
         floor.position -= new Vector3(0.0f, floor_speed * Time.deltaTime, 0.0f);
         if (floor.position.y <= reset_y) floor.position = initial_floor;
         

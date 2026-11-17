@@ -14,6 +14,7 @@ public class stage_manager : MonoBehaviour
     
     public void next_stage()
     {
+        //Move to the next scene
         int next_scene = SceneManager.GetActiveScene().buildIndex + 1;
         if (next_scene >= SceneManager.sceneCountInBuildSettings)
         {
@@ -23,17 +24,20 @@ public class stage_manager : MonoBehaviour
         SceneManager.LoadScene(next_scene);
     }
     
+    //Unpause level
     public void resume_button()
     {
         toggle_pause();
     }
     
+    //Restart level
     public void restart_button()
     {
         if(paused) toggle_pause();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+    //Go to title screen
     public void quit_to_title_button()
     {
         toggle_pause();
@@ -41,6 +45,7 @@ public class stage_manager : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
+    //Pause/unpause
     public void toggle_pause()
     {
         paused = !paused;

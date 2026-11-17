@@ -7,15 +7,16 @@ using UnityEngine.Serialization;
 
 public class shot : MonoBehaviour
 {
+    //Movement
     public bool is_moving = false;
     public bool is_stopping = false;
     public Vector3 last_static_pos;
     public Vector3 last_player_movement;
     private Vector3 initial_offset;
     
+    //Shooting
     public bullet bullet;
     public bool is_shooting = false;
-
     public float shot_start_time;
     public float shot_delay = 0.005f;
     
@@ -44,17 +45,12 @@ public class shot : MonoBehaviour
         transform.position = fixed_pos;
         
     }
-
-    public void start_shooting()
-    {
-        is_shooting = true;
-        shot_start_time = Time.time;
-    }
     
     void Update()
     {
         if (!Keyboard.current.zKey.wasReleasedThisFrame && is_shooting)
         {
+            //Z is held down, shoot
             if (shot_start_time + shot_delay <= Time.time)
             {
                 Instantiate(bullet.gameObject, transform.position, transform.rotation).GetComponent<bullet>().transform.position += new Vector3(0.0f, 0.2f, 0.0f);

@@ -9,13 +9,13 @@ public class Damage : MonoBehaviour
 {
     public int lives = 3;
     public int respawnTimer = 2500;
-    //public Sprite sprite;
+    public Sprite sprite;
     private SpriteRenderer m_spriteRenderer;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         m_spriteRenderer = GetComponentInParent<SpriteRenderer>();
-        //m_spriteRenderer.sprite = sprite;
+        m_spriteRenderer.sprite = sprite;
     }
     // Update is called once per frame
     void OnCollisionEnter2D(Collision2D collision2D)

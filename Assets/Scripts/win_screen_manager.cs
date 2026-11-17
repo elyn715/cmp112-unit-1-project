@@ -6,15 +6,15 @@ public class win_screen_manager : MonoBehaviour
 {
     void Start()
     {
+        //Show final details through text
         statistics.instance.show_details();
     }
     
     void Update()
     {
-        //Check for stage end
         if (Keyboard.current.enterKey.wasPressedThisFrame)
         {
-            //Move to next stage
+            //Move to title
             SceneManager.LoadScene(0);
             
             //Reset stats
