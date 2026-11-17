@@ -91,7 +91,7 @@ public class player : MonoBehaviour
 
     void OnBomb(InputValue value)
     {
-        if (bombs > 0)
+        if (bombs > 0 && !GetComponentInChildren<bomb>())
         {
             --bombs;
             Instantiate(bomb.gameObject, transform);
@@ -192,7 +192,7 @@ public class player : MonoBehaviour
             Thread.Sleep(respawnTimer);
             foreach (SpriteRenderer sprite in sprites)
             {
-                sprite.enabled = true;
+                if(sprite.name != "hitbox") sprite.enabled = true;
             }
             
             //Reset to start position
@@ -224,20 +224,20 @@ public class player : MonoBehaviour
         if (collision.CompareTag("bomb_item"))
         {
             ++bombs;
-            Debug.Log("player gained bomb, bombs is now " + bombs);
+            statistics.instance.update_bombs();
         }
         else if (collision.CompareTag("life"))
         {
             ++lives;
-            Debug.Log("player gained life, lives is now " + lives);
+            statistics.instance.update_lives();
         }
         else if (!is_cooldown)
         {
             //Hit
             //Log in tracker
+            lives -= 1;
             statistics.instance.lose_life();
             
-            lives -= 1;
             if (lives >= 0){
                 //Hide player
                 foreach (SpriteRenderer sprite in sprites)
@@ -250,6 +250,11 @@ public class player : MonoBehaviour
             {
                 //Restart level
                 restart_event.Invoke();
+                lives = 3;
+                bombs = 3;
+                statistics.instance.update_lives();
+                statistics.instance.update_bombs();
+                statistics.instance.reset_score();
             }
         }
     }

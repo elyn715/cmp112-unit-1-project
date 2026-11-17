@@ -2278,6 +2278,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: stage2_bg
       objectReference: {fileID: 0}
+    - target: {fileID: 4408435274252918505, guid: d144452cbf150a64faa4d7f58651e889, type: 3}
+      propertyPath: third_speed
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8099373811960140256, guid: d144452cbf150a64faa4d7f58651e889, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.13
