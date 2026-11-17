@@ -667,6 +667,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3821565914008757089, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
+      propertyPath: waves.Array.data[13].is_final
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3821565914008757089, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: waves.Array.data[1].move_type
       value: 3
       objectReference: {fileID: 0}

@@ -30,7 +30,7 @@ public class stage_manager : MonoBehaviour
     
     public void restart_button()
     {
-        toggle_pause();
+        if(paused) toggle_pause();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

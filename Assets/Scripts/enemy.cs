@@ -6,15 +6,23 @@ using Random = UnityEngine.Random;
 
 public class enemy : MonoBehaviour
 {
-    public int shot_offset = 5;
-    private int offset_counter = 0;
-    private int sub_offset_counter = 0;
+    //public int shot_offset = 5;
+    //private int offset_counter = 0;
+    //private int sub_offset_counter = 0;
+    
+    private float shot_start_time;
+    private float sub_shot_start_time;
+    public float shot_delay = 0.05f;
+    
+    
+    
     public int health = 500;
     [NonSerialized] public EnemyMoveType move_type;
     [NonSerialized] public move_details move_data;
     [NonSerialized] public EnemyShootType shot_type;
     [NonSerialized] public EnemyShootType sub_shot_type;
     [NonSerialized] public shoot_details shot_data;
+    [NonSerialized] public bool no_spin = false;
     public float speed = 5.0f;
 
     private Vector2 origin_offset;
@@ -83,15 +91,18 @@ public class enemy : MonoBehaviour
             int random_colour = Random.Range(0, colours.Length - 1);
             GetComponentInChildren<SpriteRenderer>().color = colours[random_colour];
         }
+
+        shot_start_time = Time.time;
+        sub_shot_start_time = Time.time;
     }
 
-    //move this to fixed
     void Update()
     {
         if ((shot_type == EnemyShootType.SPIN || sub_shot_type == EnemyShootType.SPIN) && GetComponentInChildren<enemy_collide>().is_active)
         {
             transform.eulerAngles += new Vector3(0.0f, 0.0f, shot_data.spin_speed * Time.deltaTime);
             fixed_z_rotation = transform.eulerAngles.z;
+            if(no_spin) GetComponentInChildren<SpriteRenderer>().transform.eulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
         }
     }
 
@@ -107,12 +118,11 @@ public class enemy : MonoBehaviour
 
     private void manage_shooting(EnemyShootType type, bool sub = false)
     {
-        int offset_compare = shot_offset;
-        if (type == EnemyShootType.MULTIPLE) offset_compare += shot_offset * 3;
-        else if (type == EnemyShootType.SPIN) offset_compare -= 5;
-        if (offset_compare <= 0) offset_compare = 1;
-        //Debug.Log("offset compare is " + offset_compare + ", offset_counter is " + offset_counter);
-        if (offset_compare == offset_counter)
+        float delay_to_use = shot_delay;
+        if (type == EnemyShootType.MULTIPLE) delay_to_use *= 1.5f;
+        else if (type == EnemyShootType.SPIN) delay_to_use /= 2.0f;
+        if (delay_to_use <= 0) delay_to_use = 0.5f;
+        if ((!sub && shot_start_time + delay_to_use <= Time.time) || (sub && sub_shot_start_time + delay_to_use <= Time.time))
         {
             if (type == EnemyShootType.MULTIPLE)
             {
@@ -123,6 +133,7 @@ public class enemy : MonoBehaviour
                     //transform.eulerAngles += new Vector3(0.0f, 0.0f, difference * i);
                     GameObject multiple_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
                     multiple_bullet.GetComponent<bullet>().set_direction(transform.right);
+                    multiple_bullet.GetComponent<bullet>().grow = shot_data.bullet_grow;
                 }
                 transform.eulerAngles = new Vector3(0, 0, fixed_z_rotation);
             }
@@ -135,16 +146,11 @@ public class enemy : MonoBehaviour
                 
                 Vector3 direction = (shot_target - transform.position).normalized;
                 new_bullet.GetComponent<bullet>().set_direction(direction);
+                new_bullet.GetComponent<bullet>().grow = shot_data.bullet_grow;
             }
 
-            if (sub) sub_offset_counter = 0;
-            else offset_counter = 0;
-            
-        }
-        else
-        {
-            if (sub) ++sub_offset_counter;
-            else ++offset_counter;
+            if(!sub) shot_start_time = Time.time;
+            else sub_shot_start_time = Time.time;
         }
     }
     

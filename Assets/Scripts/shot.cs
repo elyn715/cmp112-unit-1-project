@@ -16,8 +16,8 @@ public class shot : MonoBehaviour
     public bullet bullet;
     public bool is_shooting = false;
 
-    public int shot_offset = 100;
-    private int offset_counter = 0;
+    public float shot_start_time;
+    public float shot_delay = 0.005f;
     
     void Start()
     {
@@ -44,17 +44,22 @@ public class shot : MonoBehaviour
         transform.position = fixed_pos;
         
     }
+
+    public void start_shooting()
+    {
+        is_shooting = true;
+        shot_start_time = Time.time;
+    }
     
     void Update()
     {
         if (!Keyboard.current.zKey.wasReleasedThisFrame && is_shooting)
         {
-            if (shot_offset == offset_counter)
+            if (shot_start_time + shot_delay <= Time.time)
             {
                 Instantiate(bullet.gameObject, transform.position, transform.rotation).GetComponent<bullet>().transform.position += new Vector3(0.0f, 0.2f, 0.0f);
-                offset_counter = 0;
+                shot_start_time = Time.time;
             }
-            else ++offset_counter;
         }
         else if (Keyboard.current.zKey.wasReleasedThisFrame) is_shooting = false;
     }

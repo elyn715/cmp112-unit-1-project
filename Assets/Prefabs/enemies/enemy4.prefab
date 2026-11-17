@@ -2312,8 +2312,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55b0fa527eae3814eadbdc60ea67bde6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  shot_offset: 20
-  health: 200
+  shot_delay: 0.4
+  health: 150
   speed: 3
   bullet: {fileID: 7702407191789642928, guid: bd5615faea3e0e04e891e68a74060734, type: 3}
   randomize_rotation: 1
