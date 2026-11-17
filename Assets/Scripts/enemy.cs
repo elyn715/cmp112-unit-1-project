@@ -159,12 +159,14 @@ public class enemy : MonoBehaviour
         //if not dead
         if (GetComponentInChildren<enemy_collide>().is_active)
         {
-            manage_shooting(shot_type);
-            if (sub_shot_type != EnemyShootType.NONE)
+            if (para_start_time + shot_data.start_delay <= Time.time)
             {
-                manage_shooting(sub_shot_type, true);
+                manage_shooting(shot_type);
+                if (sub_shot_type != EnemyShootType.NONE)
+                {
+                    manage_shooting(sub_shot_type, true);
+                }
             }
-            //if sub type set, do that
             
             switch (move_type)
             {
@@ -231,8 +233,8 @@ public class enemy : MonoBehaviour
                     break;
             }
 
-            //Only start checking bounds 2 seconds after spawn
-            if (Time.time >= para_start_time + 2)
+            //Only start checking bounds 5 seconds after spawn
+            if (Time.time >= para_start_time + 5)
             {
                 bounds_check();
             }

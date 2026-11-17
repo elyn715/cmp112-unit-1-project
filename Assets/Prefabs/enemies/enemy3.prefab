@@ -2312,12 +2312,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55b0fa527eae3814eadbdc60ea67bde6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  shot_offset: 25
-  health: 250
+  shot_delay: 0.45
+  health: 150
   speed: 3
   bullet: {fileID: 7702407191789642928, guid: ab27532466b92b34292369960accbc8d, type: 3}
   randomize_rotation: 1
-  randomize_colour: 1
+  randomize_colour: 0
 --- !u!1 &8225399631637411730
 GameObject:
   m_ObjectHideFlags: 0
