@@ -131,6 +131,12 @@ public class statistics : MonoBehaviour
         total_score += score;
         update_score();
     }
+
+    public void reset_score()
+    {
+        total_score = 0;
+        update_score();
+    }
     private void update_score()
     {
         get_field("score_text").text = "score\n   " + total_score;

@@ -254,6 +254,7 @@ public class player : MonoBehaviour
                 bombs = 3;
                 statistics.instance.update_lives();
                 statistics.instance.update_bombs();
+                statistics.instance.reset_score();
             }
         }
     }
