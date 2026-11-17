@@ -24,11 +24,13 @@ public class enemy_collide : MonoBehaviour
     {
         if (is_active)
         {
-            if (collision.CompareTag("player_bullet"))
+            if (collision.CompareTag("player_bullet") ||  collision.CompareTag("bomb"))
             {
-                //Take damage
-                GetComponentInParent<enemy>().health -= 10;
-
+                //Take damage - more from bombs
+                int damage = 10;
+                if (collision.CompareTag("bomb")) damage *= 10;
+                GetComponentInParent<enemy>().health -= damage;
+                
                 //Add to tracking
                 statistics.instance.add_damage(10);
                 

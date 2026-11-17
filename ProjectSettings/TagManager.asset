@@ -10,6 +10,7 @@ TagManager:
   - enemy_bullet
   - bomb
   - life
+  - bomb_item
   layers:
   - Default
   - TransparentFX

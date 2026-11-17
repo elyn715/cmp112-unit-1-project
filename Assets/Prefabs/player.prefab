@@ -118,6 +118,7 @@ MonoBehaviour:
   bombs: 3
   respawnTimer: 1000
   damage_cooldown: 2.5
+  bomb: {fileID: 5504945896842309688, guid: be170692c52c12a4680b987304683378, type: 3}
 --- !u!58 &6389314290630754855
 CircleCollider2D:
   m_ObjectHideFlags: 0
