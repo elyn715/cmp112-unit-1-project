@@ -109,7 +109,6 @@ public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, M
     
     public item_details item_data;
     public EnemyShootType shot_type;
-    public EnemyShootType sub_shot_type;
     public shoot_details shot_data;
     public EnemyMoveType move_type;
     public move_details move_data;
@@ -117,7 +116,7 @@ public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, M
     private bool has_spawned;
 
     public bool get_state(){return has_spawned;}
-    public spawn_event(string name, Vector3 pos, enemy e, int num, float interval, int items, bool bomb, bool life, float time, bool spin, EnemyShootType shot, EnemyShootType subshot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
+    public spawn_event(string name, Vector3 pos, enemy e, int num, float interval, int items, bool bomb, bool life, float time, bool spin, EnemyShootType shot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
         bool flip,  float paras, float paraw, float parah,
         float quadw, float quadstop,
         float vstop,  float vwait, float smod, bool final, bool grow, float shotdelay)
@@ -140,7 +139,6 @@ public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, M
         
         move_type = move;
         shot_type = shot;
-        sub_shot_type = subshot;
         
         has_spawned = false;
 
@@ -246,7 +244,6 @@ public class stage_content : MonoBehaviour
                     new_enemy.move_type = waves[i].move_type;
                     new_enemy.move_data = waves[i].move_data;
                     new_enemy.shot_type = waves[i].shot_type;
-                    new_enemy.sub_shot_type = waves[i].sub_shot_type;
                     new_enemy.shot_data = waves[i].shot_data;
                     new_enemy.no_spin = waves[i].prevent_spinning;
                     if(waves[i].speed_mod > 0.0f) new_enemy.speed += waves[i].speed_mod;
@@ -270,7 +267,7 @@ public class stage_content : MonoBehaviour
         enemy[] enemies = GetComponentsInChildren<enemy>();
         foreach (enemy e in enemies)
         {
-            if(player && (e.shot_type == EnemyShootType.PLAYER_FOLLOW || e.sub_shot_type == EnemyShootType.PLAYER_FOLLOW)) e.shot_target = player.transform.position;
+            if(player && e.shot_type == EnemyShootType.PLAYER_FOLLOW) e.shot_target = player.transform.position;
         }
 
         //check for stage end - boss defeat

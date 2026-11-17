@@ -8,14 +8,12 @@ public class enemy : MonoBehaviour
 {
     //Bullet timing
     private float shot_start_time;
-    private float sub_shot_start_time;
     public float shot_delay = 0.05f;
     
     //Movement and shooting details
     [NonSerialized] public EnemyMoveType move_type;
     [NonSerialized] public move_details move_data;
     [NonSerialized] public EnemyShootType shot_type;
-    [NonSerialized] public EnemyShootType sub_shot_type;
     [NonSerialized] public shoot_details shot_data;
     [NonSerialized] public Vector3 shot_target = new Vector2(0.0f, 0.0f);
     [NonSerialized] public bool no_spin = false;
@@ -69,7 +67,6 @@ public class enemy : MonoBehaviour
         }
         para_start_time = Time.time;
         
-        //FIX THESE FOR SUB TYPE--------------------------------
         if (shot_type == EnemyShootType.VERTICAL) shot_target = new Vector2(transform.position.x, bounds_check.bottom_y_edge);
         else if(shot_type == EnemyShootType.PLAYER_FIXED) shot_target = GetComponentInParent<stage_content>().player.transform.position;
         
@@ -88,13 +85,12 @@ public class enemy : MonoBehaviour
         }
 
         shot_start_time = Time.time;
-        sub_shot_start_time = Time.time;
     }
 
     void Update()
     {
         //Rotate enemy
-        if ((shot_type == EnemyShootType.SPIN || sub_shot_type == EnemyShootType.SPIN) && GetComponentInChildren<enemy_collide>().is_active)
+        if ((shot_type == EnemyShootType.SPIN) && GetComponentInChildren<enemy_collide>().is_active)
         {
             transform.eulerAngles += new Vector3(0.0f, 0.0f, shot_data.spin_speed * Time.deltaTime);
             fixed_z_rotation = transform.eulerAngles.z;
@@ -102,15 +98,15 @@ public class enemy : MonoBehaviour
         }
     }
 
-    private void manage_shooting(EnemyShootType type, bool sub = false)
+    private void manage_shooting(EnemyShootType type)
     {
         //Calculate the delay to use - scales to balance out the bullets for multiple and spin
         float delay_to_use = shot_delay;
         if (type == EnemyShootType.MULTIPLE) delay_to_use *= 1.5f;
         else if (type == EnemyShootType.SPIN) delay_to_use /= 2.0f; 
-        if (delay_to_use <= 0) delay_to_use = 0.5f;
+        if (delay_to_use < 0) delay_to_use = 0.0f;
         
-        if ((!sub && shot_start_time + delay_to_use <= Time.time) || (sub && sub_shot_start_time + delay_to_use <= Time.time))
+        if (shot_start_time + delay_to_use <= Time.time)
         {
             //Shoot
             if (type == EnemyShootType.MULTIPLE)
@@ -138,8 +134,7 @@ public class enemy : MonoBehaviour
                 new_bullet.GetComponent<bullet>().grow = shot_data.bullet_grow;
             }
 
-            if(!sub) shot_start_time = Time.time;
-            else sub_shot_start_time = Time.time;
+            shot_start_time = Time.time;
         }
     }
     
@@ -151,10 +146,6 @@ public class enemy : MonoBehaviour
             if (para_start_time + shot_data.start_delay <= Time.time)
             {
                 manage_shooting(shot_type);
-                if (sub_shot_type != EnemyShootType.NONE)
-                {
-                    manage_shooting(sub_shot_type, true);
-                }
             }
             
             switch (move_type)

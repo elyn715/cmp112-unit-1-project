@@ -836,7 +836,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3821565914008757089, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: waves.Array.data[13].shot_type
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3821565914008757089, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: waves.Array.data[13].timestamp
@@ -1049,7 +1049,7 @@ PrefabInstance:
     - target: {fileID: 3821565914008757089, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: waves.Array.data[13].spawn_enemy
       value: 
-      objectReference: {fileID: 1338794879639416368, guid: 950e9a2b6502f2d4bb98ae108d4571c2, type: 3}
+      objectReference: {fileID: 1338794879639416368, guid: 4afc4591cc0e3814ea25387e1b96d900, type: 3}
     - target: {fileID: 3821565914008757089, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: waves.Array.data[13].spawn_pos.y
       value: 6
@@ -1076,7 +1076,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3821565914008757089, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: waves.Array.data[13].sub_shot_type
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3821565914008757089, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: waves.Array.data[0].shot_data.shots
@@ -1411,6 +1411,10 @@ PrefabInstance:
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3821565914008757089, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
+      propertyPath: waves.Array.data[13].prevent_spinning
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3821565914008757089, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: waves.Array.data[0].delay_between_spawn
       value: 0.5
       objectReference: {fileID: 0}
@@ -1740,7 +1744,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3821565914008757089, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: waves.Array.data[13].shot_data.spin_speed
-      value: 550
+      value: 999
       objectReference: {fileID: 0}
     - target: {fileID: 3821565914008757089, guid: 4de8de215ec9b1e4b9c4c51de1494187, type: 3}
       propertyPath: waves.Array.data[1].item_data.score_items
