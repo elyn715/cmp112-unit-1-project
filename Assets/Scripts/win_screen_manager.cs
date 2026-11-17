@@ -7,7 +7,7 @@ public class win_screen_manager : MonoBehaviour
     void Start()
     {
         //Show final details through text
-        statistics.instance.show_details();
+        statistics.instance.update_results();
     }
     
     void Update()

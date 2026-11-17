@@ -221,7 +221,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9039255181755280976, guid: e7e58f9267df22641b2f2e5de2d66edc, type: 3}
       propertyPath: water_speed
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
