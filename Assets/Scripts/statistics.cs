@@ -1,5 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 //This is a singleton
 public class statistics : MonoBehaviour
@@ -20,11 +21,7 @@ public class statistics : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    public player player;
     
-    //Add references to text elements here
-
     private int lives_lost = 0;
     private int damage_dealt = 0;
     private int bombs_used = 0;

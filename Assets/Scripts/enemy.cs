@@ -68,9 +68,8 @@ public class enemy : MonoBehaviour
         }
         start_time = Time.time;
         
-        //Set up fixed targets for shooting
-        if (shot_type == EnemyShootType.VERTICAL) shot_target = new Vector2(transform.position.x, bounds_check.bottom_y_edge);
-        else if(shot_type == EnemyShootType.PLAYER_FIXED) shot_target = GetComponentInParent<stage_content>().player.transform.position;
+        //Set up fixed target
+        if(shot_type == EnemyShootType.PLAYER_FIXED) shot_target = GetComponentInParent<stage_content>().player.transform.position;
         
         //Set random rotation
         if (randomize_rotation)
@@ -128,7 +127,7 @@ public class enemy : MonoBehaviour
                 GameObject new_bullet = Instantiate(bullet.gameObject, transform.position, transform.rotation);
 
                 //Set targets
-                //if (type == EnemyShootType.VERTICAL) shot_target = new Vector3(transform.position.x, bounds_check.bottom_y_edge);
+                if (type == EnemyShootType.VERTICAL) shot_target = new Vector3(transform.position.x, bounds_check.bottom_y_edge);
                 if (type == EnemyShootType.SPIN) shot_target = transform.position + transform.right;
                 
                 Vector3 direction = (shot_target - transform.position).normalized;

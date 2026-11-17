@@ -40,6 +40,7 @@ public class player : MonoBehaviour
 
     private bool showing_hitbox = false;
     private SpriteRenderer hitbox_sprite;
+    public bomb bomb;
     
     void Start()
     {
@@ -92,6 +93,9 @@ public class player : MonoBehaviour
     {
         if (bombs > 0)
         {
+            --bombs;
+            Instantiate(bomb.gameObject, transform);
+            
             //Add to tracking
             statistics.instance.use_bomb();
         }
@@ -217,7 +221,7 @@ public class player : MonoBehaviour
     
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("bomb"))
+        if (collision.CompareTag("bomb_item"))
         {
             ++bombs;
             Debug.Log("player gained bomb, bombs is now " + bombs);

@@ -32,6 +32,11 @@ public class bullet : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision)
     {
         //Covers player bullet hitting enemies, enemy bullet hitting player
-        if (!collision.CompareTag("player_bullet") && !collision.CompareTag("enemy_bullet") && !(collision.CompareTag("enemy") && is_enemy_bullet)) Destroy(gameObject);
+        if (!collision.CompareTag("player_bullet") && !collision.CompareTag("enemy_bullet") && !(collision.CompareTag("enemy") && is_enemy_bullet))
+        {
+            //Destroy delayed if bomb
+            if(collision.CompareTag("bomb")) Destroy(gameObject, 0.005f);
+            else Destroy(gameObject);
+        }
     }
 }
