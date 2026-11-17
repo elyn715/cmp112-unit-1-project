@@ -7,60 +7,50 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using System.Threading;
 using UnityEngine.TextCore.LowLevel;
-using UnityEngine.UI;
-using TMPro;
 
 public class player : MonoBehaviour
 {
+    //General
     private float move_x;
     private float move_y;
     public float speed;
     private bool is_moving = false;
+    [NonSerialized] public int score = 0;
+    [NonSerialized] public Vector2 start_pos;
+    
+    
     private bool movement_start_pending = false;
     public float shot_move_delay = 0.02f;
+    
     private SpriteRenderer[] sprites;
     private shot[] shots;
-
-    public int score = 0;
     
+    //Events
     public UnityEvent pause_event;
-    public UnityEvent tutorial_event;
-    public bool tutorial_on = true;
+    public UnityEvent restart_event;
     
-    public Vector2 start_pos;
-    public TextMeshProUGUI livesText;
-    public TextMeshProUGUI bombText;
-    public TextMeshProUGUI scoreText;
-    
+    //Items and damage
     public int lives = 3;
     public int bombs = 3;
     public int respawnTimer = 2500;
     private bool damage_wait_pending = false;
-    private Collider2D last_collided_object;
     
     private bool is_cooldown = false;
-    public int damage_cooldown = 1;
+    public float damage_cooldown = 1;
+
+    private bool showing_hitbox = false;
+    private SpriteRenderer hitbox_sprite;
+    public bomb bomb;
     
     void Start()
     {
+        //Get sprites and shots
         sprites = gameObject.GetComponentsInChildren<SpriteRenderer>();
+        hitbox_sprite = transform.Find("hitbox").GetComponent<SpriteRenderer>();
+        hitbox_sprite.enabled = false;
         shots = gameObject.GetComponentsInChildren<shot>();
-        if (SceneManager.GetActiveScene().buildIndex == 1)
-        {
-            foreach (SpriteRenderer sprite in sprites)
-            {
-                sprite.enabled = false;
-            }
-        }
-        else
-        {
-            tutorial_on = false;
-        }
         
         start_pos = transform.position;
-        livesText.text = "Lives: " + lives.ToString();
-        bombText.text = "Bombs: " + bombs.ToString();
-        scoreText.text = "Score: " + score.ToString(); 
     }
     
     void OnMove(InputValue movementvalue)
@@ -71,6 +61,8 @@ public class player : MonoBehaviour
             //Set off shot movement delay
             movement_start_pending = true;
         }
+        
+        //Set velocity
         Vector2 movement_vector = movementvalue.Get<Vector2>();
         move_x = movement_vector.x;
         move_y = movement_vector.y;
@@ -78,29 +70,20 @@ public class player : MonoBehaviour
 
     void OnShoot(InputValue value)
     {
-        if (tutorial_on)
+        foreach (shot shot in shots)
         {
-            tutorial_event.Invoke();
-            tutorial_on = false;
-            foreach (SpriteRenderer sprite in sprites)
-            {
-                sprite.enabled = true;
-            }
-            transform.position = start_pos;
-            foreach (shot shot in shots)
-            {
-                shot.reset_pos();
-            }
-        }
-        else
-        {
-            foreach (shot shot in shots)
-            {
-                shot.is_shooting = true;
-            }
+            //Shoot
+            shot.is_shooting = true;
         }
     }
 
+    void OnShowHitbox(InputValue value)
+    {
+        //Show hitbox sprite
+        showing_hitbox = true;
+        hitbox_sprite.enabled = true;
+    }
+    
     void OnPause(InputValue value)
     {
         pause_event.Invoke();
@@ -110,14 +93,17 @@ public class player : MonoBehaviour
     {
         if (bombs > 0)
         {
-            Debug.Log("using bomb");
+            --bombs;
+            Instantiate(bomb.gameObject, transform);
+            
+            //Add to tracking
             statistics.instance.use_bomb();
-            bombText.text = "Bombs: " + bombs.ToString();
         }
     }
 
     IEnumerator wait_to_move_shot()
     {
+        //Wait a small amount of time before moving with the player
         yield return new WaitForSeconds(shot_move_delay);
         foreach (shot shot in shots)
         {
@@ -132,13 +118,15 @@ public class player : MonoBehaviour
             shot.is_stopping = true;
         }
         yield return new WaitForSeconds(shot_move_delay);
-        //Check if the player had started moving again before the delay ended
+        
+        //This is needed to keep following the player if they started moving again before the delay ended
         foreach (shot shot in shots)
         {
             shot.reset_pos();
             shot.is_stopping = false;
         }
         
+        //Position reset
         if (!is_moving)
         {
             foreach (shot shot in shots)
@@ -151,12 +139,19 @@ public class player : MonoBehaviour
     
     void FixedUpdate()
     {
-        if (tutorial_on || damage_wait_pending)
+        if (damage_wait_pending)
         {
+            //Stop player from moving
             move_x = 0;
             move_y = 0;
         }
-        Vector3 movement = new Vector3(move_x * speed * Time.deltaTime, move_y * speed * Time.deltaTime, 0.0f);
+
+        //Calculate speed - moves slower if showing hitbox
+        float speed_to_use = speed;
+        if (showing_hitbox) speed_to_use *= 0.4f;
+        
+        //Move
+        Vector3 movement = new Vector3(move_x * speed_to_use * Time.deltaTime, move_y * speed_to_use * Time.deltaTime, 0.0f);
         transform.position += movement;
 
         //Save the movement for the shot
@@ -168,13 +163,14 @@ public class player : MonoBehaviour
             }
         }
         
-        //Player stopped
+        //Player stopped moving
         if (is_moving && movement == Vector3.zero)
         {
             is_moving = false;
             StartCoroutine(wait_to_stop_shot());
         }
 
+        //Player started moving
         if (movement_start_pending)
         {
             StartCoroutine(wait_to_move_shot());
@@ -186,34 +182,38 @@ public class player : MonoBehaviour
             shot.move();
         }
         
-        //Check against boundaries
-        Vector3 boundary_fixed_pos = transform.position;
-        if(transform.position.x < globlal_screen_boundaries.left_x_edge) boundary_fixed_pos.x = globlal_screen_boundaries.left_x_edge;
-        else if(transform.position.x > globlal_screen_boundaries.right_x_edge) boundary_fixed_pos.x = globlal_screen_boundaries.right_x_edge;
-        if(transform.position.y > globlal_screen_boundaries.top_y_edge) boundary_fixed_pos.y = globlal_screen_boundaries.top_y_edge;
-        else if(transform.position.y < globlal_screen_boundaries.bottom_y_edge) boundary_fixed_pos.y = globlal_screen_boundaries.bottom_y_edge;
-        transform.position = boundary_fixed_pos;
+        //Screen boundary check
+        transform.position = bounds_check.fix_to_boundaries(transform.position);
         
         //Damage display delay
         if (damage_wait_pending)
         {
+            //Pause and hide player
             Thread.Sleep(respawnTimer);
             foreach (SpriteRenderer sprite in sprites)
             {
                 sprite.enabled = true;
             }
+            
+            //Reset to start position
             timerEnded();
-            if (last_collided_object)
-            {
-                last_collided_object.enabled = true;
-            }
+            
+            //Start invincibillity cooldown
             damage_wait_pending = false;
             StartCoroutine(respawn_cooldown());
+        }
+        
+        if (showing_hitbox && !Keyboard.current.ctrlKey.isPressed)
+        {
+            //Hide hitbox
+            showing_hitbox = false;
+            hitbox_sprite.enabled = false;
         }
     }
     
     IEnumerator respawn_cooldown()
     {
+        //Stops damage for the cooldown
         is_cooldown = true;
         yield return new WaitForSeconds(damage_cooldown);
         is_cooldown = false;
@@ -221,43 +221,40 @@ public class player : MonoBehaviour
     
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "bomb")
+        if (collision.CompareTag("bomb_item"))
         {
             ++bombs;
             Debug.Log("player gained bomb, bombs is now " + bombs);
-            bombText.text = "Bombs: " + bombs.ToString();
         }
-        else if (collision.tag == "life")
+        else if (collision.CompareTag("life"))
         {
             ++lives;
             Debug.Log("player gained life, lives is now " + lives);
-            livesText.text = "Lives: " + lives.ToString();
         }
         else if (!is_cooldown)
         {
-            Debug.Log("player collision");
-            if (collision.tag != "enemy_bullet")
-            {
-                last_collided_object = collision;
-            }
-
+            //Hit
+            //Log in tracker
             statistics.instance.lose_life();
             
             lives -= 1;
-            livesText.text = "Lives: " + lives.ToString();
-            collision.enabled = false;
             if (lives >= 0){
+                //Hide player
                 foreach (SpriteRenderer sprite in sprites)
                 {
-                    sprite.enabled = false;
+                    if(sprite.name != "hitbox") sprite.enabled = false;
                 }
                 damage_wait_pending = true;
-                string output = $"Damage Taken";
-                Debug.Log(output);
             }
-            else Destroy(gameObject);
+            else
+            {
+                //Restart level
+                restart_event.Invoke();
+            }
         }
     }
+    
+    //Resets position
     void timerEnded()
     {
         transform.position = start_pos;
@@ -267,10 +264,10 @@ public class player : MonoBehaviour
         }
     }
 
+    //Increases score
     void OnParticleCollision(GameObject other)
     {
         score += 1000;
         statistics.instance.add_score(1000);
-        scoreText.text = "Score: " + score.ToString();
     }
 }

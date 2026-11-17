@@ -1,11 +1,14 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.U2D.Physics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.Serialization;
 
 public enum EnemyMoveType {LINEAR_H, LINEAR_V, QUADRATIC, PARAMETRIC}
-public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPLE}
+public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPLE}
 
 [System.Serializable] public struct move_details
 {
@@ -25,7 +28,7 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
     public float vertical_stop;
     public float wait_time;
     
-    //parametric
+    //Parametric
     public move_details(bool flip, float parascale, float paraw, float parah) : this()
     {
         mirror = flip;
@@ -34,7 +37,7 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
         para_h = parah;
     }
 
-    //quadratic and linear v - had to use the same constructor as the signature was the same
+    //Quadratic and linear v - had to use the same constructor as the signature was the same
     public move_details(float widthorstop, float stoporwait, bool usequad = true) : this()
     {
         if (usequad)
@@ -51,6 +54,9 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
 }
 [System.Serializable] public struct shoot_details
 {
+    public bool bullet_grow;
+    public float start_delay;
+    
     [Header("Spin")]
     public float spin_speed;
 
@@ -59,11 +65,13 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
 
     private bullet bullet;
 
-    public shoot_details(bullet b, float speed = 0.0f, int shotnum = 1)
+    public shoot_details(bullet b, bool grow, float delay = 0.0f, float speed = 0.0f, int shotnum = 1)
     {
         bullet = b;
         spin_speed = speed;
         shots = shotnum;
+        bullet_grow = grow;
+        start_delay = delay;
     }
 }
 
@@ -84,46 +92,73 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
 }
 [System.Serializable] public struct spawn_event
 {
+    public string event_name;
+    
     public Vector3 spawn_pos;
     public enemy spawn_enemy;
-    public int health;
+    
+    public int enemies_to_spawn;
+    public float delay_between_spawn;
+    
     public float timestamp;
-    private bool has_spawned;
-    public int shot_rate;
+
+    public bool prevent_spinning;
+    public bool is_final;
+
+    public float speed_mod;
+    
     public item_details item_data;
     public EnemyShootType shot_type;
     public shoot_details shot_data;
     public EnemyMoveType move_type;
     public move_details move_data;
+    
+    private bool has_spawned;
 
     public bool get_state(){return has_spawned;}
-    public void set_spawned(){has_spawned = true;}
-    public spawn_event(Vector3 pos, enemy e, int h, int items, bool bomb, bool life, float time, int shotrate, EnemyShootType shot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
+    public spawn_event(string name, Vector3 pos, enemy e, int num, float interval, float time, bool spin, bool final, float smod, 
+        int items, bool bomb, bool life,
+        EnemyMoveType move, EnemyShootType shot, 
+        bullet bullet, bool grow, float shotdelay, float spinspeed, int shotnum,
         bool flip,  float paras, float paraw, float parah,
         float quadw, float quadstop,
         float vstop,  float vwait)
     {
+        //Set main details
+        event_name = name;
+        
         spawn_pos = pos;
         spawn_enemy = e;
-        health = h;
+
+        enemies_to_spawn = num;
+        delay_between_spawn = interval;
+        
         timestamp = time;
-        has_spawned = false;
+
+        prevent_spinning = spin;
+        is_final = final;
+
+        if (smod > 0.0f) speed_mod = smod;
+        else speed_mod = 1.0f;
+        
         move_type = move;
         shot_type = shot;
-        shot_rate = shotrate;
+        
+        has_spawned = false;
 
+        //Set item, shot, move data
         item_data = new item_details(items, bomb, life);
         
         switch (shot)
         {
             case EnemyShootType.VERTICAL: case EnemyShootType.PLAYER_FIXED: case EnemyShootType.PLAYER_FOLLOW:
-                shot_data = new shoot_details(bullet);
+                shot_data = new shoot_details(bullet, grow, shotdelay);
                 break;
             case EnemyShootType.SPIN:
-                shot_data = new shoot_details(bullet, spinspeed);
+                shot_data = new shoot_details(bullet, grow, shotdelay, spinspeed);
                 break;
             case EnemyShootType.MULTIPLE:
-                shot_data = new shoot_details(bullet, 0.0f, shotnum);
+                shot_data = new shoot_details(bullet, grow, shotdelay, 0.0f, shotnum);
                 break;
             default:
                 shot_data = new shoot_details();
@@ -151,61 +186,100 @@ public enum EnemyShootType {VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, MULTIPL
 
 public class stage_content : MonoBehaviour
 {
-    public enemy enemy;
-    public float start_time;
-    [SerializeField]public List<spawn_event> waves = new List<spawn_event>();
-    public bool stage_running = false;
-    public player player;
-    
+    //Spawn event data
+    [NonSerialized] public float start_time;
+    [SerializeField] public List<spawn_event> waves = new List<spawn_event>();
     private List<bool> spawn_state = new List<bool>();
-
+    private List<int> num_spawned_from_event = new List<int>();
+    private List<bool> has_active_timer = new List<bool>();
+    private bool final_enemy_set = false;
+    private enemy final_enemy;
+        
+    public player player;
     public GameObject bomb;
     public GameObject life;
     
     void Start()
     {
-        if (!GetComponentInParent<stage_manager>().has_tutorial)
-        {
-            stage_running = true;
-            start_time = Time.time;
-        }
-        
+        //Add events
         foreach(spawn_event e in waves)
         {
             spawn_state.Add(e.get_state());
+            num_spawned_from_event.Add(0);
+            has_active_timer.Add(false);
         }
+
+        start_time = Time.time;
+    }
+
+    //Used for the delat between multiple enemies
+    IEnumerator start_spawn_timer(float delay, int index)
+    {
+        has_active_timer[index] = true;
+        yield return new WaitForSeconds(delay);
+        has_active_timer[index] = false;
     }
     
     void FixedUpdate()
     {
-        if (stage_running)
+        for (int i = 0; i < waves.Count; ++i)
         {
-            int index = 0;
-            foreach (spawn_event spawn in waves)
+            if (!spawn_state[i] && start_time + waves[i].timestamp <= Time.time)
             {
-                if (!spawn_state[index] && start_time + spawn.timestamp <= Time.time)
-                {
-                    spawn_state[index] = true;
-                    enemy new_enemy = Instantiate(enemy.gameObject, this.transform).GetComponent<enemy>();
-                    new_enemy.transform.position += spawn.spawn_pos;
-                    new_enemy.move_type = spawn.move_type;
-                    new_enemy.move_data = spawn.move_data;
-                    new_enemy.shot_type = spawn.shot_type;
-                    new_enemy.shot_data = spawn.shot_data;
-                    new_enemy.shot_offset = spawn.shot_rate;
-                    new_enemy.GetComponentInChildren<enemy_collide>().item_data = spawn.item_data;
-                    new_enemy.GetComponentInChildren<enemy_collide>().health = spawn.health;
-                    if(spawn.shot_type == EnemyShootType.PLAYER_FIXED) new_enemy.shot_target = player.transform.position;
-                }
-                ++index;
+                //Start event
+                spawn_state[i] = true;
             }
             
-            enemy[] enemies = GetComponentsInChildren<enemy>();
-            foreach (enemy e in enemies)
+            //If the event has been set off and there are still enemies to spawn
+            if (spawn_state[i] && waves[i].enemies_to_spawn != num_spawned_from_event[i])
             {
-                if(player && e.shot_type == EnemyShootType.PLAYER_FOLLOW) e.shot_target = player.transform.position;
+                //Check for active timer
+                if (!has_active_timer[i])
+                {
+                    //Spawn enemy, start timer, increment count
+                    enemy new_enemy = Instantiate(waves[i].spawn_enemy, transform).GetComponent<enemy>();
+                    
+                    new_enemy.transform.position += waves[i].spawn_pos;
+                    new_enemy.move_type = waves[i].move_type;
+                    new_enemy.move_data = waves[i].move_data;
+                    new_enemy.shot_type = waves[i].shot_type;
+                    new_enemy.shot_data = waves[i].shot_data;
+                    new_enemy.no_spin = waves[i].prevent_spinning;
+                    if(waves[i].speed_mod > 0.0f) new_enemy.speed += waves[i].speed_mod;
+                    new_enemy.GetComponentInChildren<enemy_collide>().item_data = waves[i].item_data;
+                    if (waves[i].shot_type == EnemyShootType.PLAYER_FIXED)
+                        new_enemy.shot_target = player.transform.position;
+                    
+                    //Start delay
+                    StartCoroutine(start_spawn_timer(waves[i].delay_between_spawn, i));
+                    num_spawned_from_event[i] += 1;
+
+                    //Mark as final if set
+                    if (waves[i].is_final)
+                    {
+                        final_enemy_set = true;
+                        final_enemy = new_enemy;
+                    }
+                }
             }
         }
+        
+        //Update position of player follow enemies
+        enemy[] enemies = GetComponentsInChildren<enemy>();
+        foreach (enemy e in enemies)
+        {
+            if(player && e.shot_type == EnemyShootType.PLAYER_FOLLOW) e.shot_target = player.transform.position;
+        }
+
+        //check for stage end - boss defeat
+        if (final_enemy_set && !final_enemy) StartCoroutine(stage_transition());
+    }
+    
+    //End of stage
+    IEnumerator stage_transition()
+    {
+        yield return new WaitForSeconds(2);
+        GetComponentInParent<stage_manager>().next_stage();
     }
 }
 

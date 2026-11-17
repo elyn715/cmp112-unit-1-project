@@ -51,7 +51,8 @@ MonoBehaviour:
   last_player_movement: {x: 0, y: 0, z: 0}
   bullet: {fileID: 4780780327295781941, guid: 6178a7b87cd5fcd4f9f38dd788716967, type: 3}
   is_shooting: 0
-  shot_offset: 10
+  shot_start_time: 0
+  shot_delay: 0.05
 --- !u!1 &8360793125627238339
 GameObject:
   m_ObjectHideFlags: 0
@@ -133,7 +134,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 2739565763472340609, guid: ab030342dbcf8c54f8e7822f049033cd, type: 3}
+  m_Sprite: {fileID: -3442273424303929756, guid: 512c5694e083aee409ce771fac10c397, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

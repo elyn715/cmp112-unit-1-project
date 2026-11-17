@@ -4,44 +4,53 @@ using UnityEngine.SceneManagement;
 
 public class stage_manager : MonoBehaviour
 {
-    public bool has_tutorial = false;
     public bool paused = false;
-    public GameObject pause_canvas;
-    public GameObject stage_canvas;
-    
-    void Update()
+    public Canvas pause_canvas;
+
+    void Start()
     {
-        if (Keyboard.current.enterKey.wasPressedThisFrame && !paused)
+        pause_canvas.enabled = false;
+    }
+    
+    public void next_stage()
+    {
+        //Move to the next scene
+        int next_scene = SceneManager.GetActiveScene().buildIndex + 1;
+        if (next_scene >= SceneManager.sceneCountInBuildSettings)
         {
-            //Move to next stage
-            int next_scene = SceneManager.GetActiveScene().buildIndex + 1;
-            if (next_scene >= SceneManager.sceneCountInBuildSettings)
-            {
-                next_scene = 0;
-            }
-            
-            SceneManager.LoadScene(next_scene);
+            next_scene = 0;
         }
+        
+        SceneManager.LoadScene(next_scene);
+    }
+    
+    //Unpause level
+    public void resume_button()
+    {
+        toggle_pause();
+    }
+    
+    //Restart level
+    public void restart_button()
+    {
+        if(paused) toggle_pause();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+    //Go to title screen
+    public void quit_to_title_button()
+    {
+        toggle_pause();
+        statistics.instance.reset();
+        SceneManager.LoadScene(0);
+    }
+
+    //Pause/unpause
     public void toggle_pause()
     {
-        bool can_pause = true;
-        if (has_tutorial)
-        {
-            tutorial_manager tutorial = GetComponentInChildren<tutorial_manager>();
-            if (tutorial.tutorial_on)
-            {
-                can_pause = false;
-            }
-        }
-
-        if (can_pause)
-        {
-            paused = !paused;
-            pause_canvas.SetActive(paused);
-            stage_canvas.SetActive(!paused);
-        }
-        //PAUSE SCENE CONTENT
+        paused = !paused;
+        pause_canvas.enabled = paused;
+        if(!paused) Time.timeScale = 1;
+        else Time.timeScale = 0;
     }
 }

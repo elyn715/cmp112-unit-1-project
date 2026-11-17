@@ -5,12 +5,14 @@ using UnityEngine.Events;
 
 public class enemy_collide : MonoBehaviour
 {
-    private bool feedback_running = false;
+    //Enemy entity general
+    [NonSerialized] public bool feedback_running = false;
+    [NonSerialized] public bool is_active = true;
+    [NonSerialized] public item_details item_data;
+    
+    //Drop item general
     private SpriteRenderer renderer;
     private ParticleSystem particles;
-    public int health = 500;
-    [NonSerialized] public item_details item_data;
-    [NonSerialized] public bool is_active = true;
 
     void Start()
     {
@@ -18,51 +20,50 @@ public class enemy_collide : MonoBehaviour
         particles = GetComponentInParent<ParticleSystem>();
     }
     
-    IEnumerator damage_feedback()
-    {
-        feedback_running = true;
-        Color base_color = renderer.color;
-        renderer.color = Color.grey;
-        yield return new WaitForSeconds(0.005f);
-        renderer.color = base_color;
-        yield return new WaitForSeconds(0.005f);
-        feedback_running = false;
-    }
-    
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (is_active)
         {
-            if (collision.tag == "player_bullet")
+            if (collision.CompareTag("player_bullet") ||  collision.CompareTag("bomb"))
             {
-                health -= 10;
-
+                //Take damage - more from bombs
+                int damage = 10;
+                if (collision.CompareTag("bomb")) damage *= 10;
+                GetComponentInParent<enemy>().health -= damage;
+                
+                //Add to tracking
                 statistics.instance.add_damage(10);
                 
-                if (health <= 0)
+                if (GetComponentInParent<enemy>().health <= 0)
                 {
+                    //Dead
+                    //Add to tracker
                     statistics.instance.defeat_enemy();
                     
-                    particles.Emit(item_data.score_items);
-                    if (item_data.drop_bomb)
-                    {
-                        Instantiate(GetComponentInParent<stage_content>().bomb, transform.position, transform.rotation);
-                    }
-                    else if (item_data.drop_life)
-                    {
-                        Instantiate(GetComponentInParent<stage_content>().life, transform.position, transform.rotation);
-                    }
+                    //Drop items
+                    particles.Emit(item_data.score_items); //Score
+                    if (item_data.drop_bomb) Instantiate(GetComponentInParent<stage_content>().bomb, transform.position, transform.rotation); //Bomb
+                    else if (item_data.drop_life) Instantiate(GetComponentInParent<stage_content>().life, transform.position, transform.rotation); //Life
+                    
+                    //Reset rotation so particles fall downwards
                     transform.parent.eulerAngles = new Vector3(0, 0, 0);
                     
+                    //Deactivate hitbox and hide sprite
                     is_active = false;
                     renderer.enabled = false;
-                    GetComponent<CircleCollider2D>().enabled = false;
-                    Debug.Log("destroying enemy");
+                    if(GetComponent<CircleCollider2D>()) GetComponent<CircleCollider2D>().enabled = false;
+                    
+                    //Extra colliders, for bosses
+                    if (GetComponent<BoxCollider2D>())
+                    {
+                        foreach (BoxCollider2D box in GetComponents<BoxCollider2D>())
+                        {
+                            box.enabled = false;
+                        }
+                    }
                 }
-                else if(!feedback_running)
-                {
-                    StartCoroutine(damage_feedback());
-                }
+                //Show damage
+                else if(!feedback_running) StartCoroutine(GetComponentInParent<enemy>().damage_feedback());
             }
         }
     }
