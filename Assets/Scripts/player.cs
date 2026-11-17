@@ -135,7 +135,7 @@ public class player : MonoBehaviour
         }
 
         float speed_to_use = speed;
-        if (showing_hitbox) speed_to_use /= 2.0f;
+        if (showing_hitbox) speed_to_use *= 0.4f;
         Vector3 movement = new Vector3(move_x * speed_to_use * Time.deltaTime, move_y * speed_to_use * Time.deltaTime, 0.0f);
         transform.position += movement;
 

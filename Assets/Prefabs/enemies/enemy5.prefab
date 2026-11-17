@@ -2312,9 +2312,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55b0fa527eae3814eadbdc60ea67bde6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  shot_offset: 10
-  health: 500
-  speed: 2
+  shot_delay: 0.45
+  health: 120
+  speed: 5
   bullet: {fileID: 7702407191789642928, guid: ab27532466b92b34292369960accbc8d, type: 3}
   randomize_rotation: 1
   randomize_colour: 1

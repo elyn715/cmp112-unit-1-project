@@ -8,6 +8,8 @@ public class bullet : MonoBehaviour
     public bool is_enemy_bullet = false;
     private Vector2 direction = Vector2.up;
 
+    public bool grow = false;
+    
     public void set_direction(Vector2 dir)
     {
         direction = dir;
@@ -23,6 +25,11 @@ public class bullet : MonoBehaviour
             transform.position.y > globlal_screen_boundaries.top_y_edge  + bullet_offset || transform.position.y < globlal_screen_boundaries.bottom_y_edge - bullet_offset)
         {
             Destroy(gameObject);
+        }
+
+        if (grow)
+        {
+            transform.localScale += new Vector3(speed / 100.0f, speed / 100.0f, 0.0f);
         }
     }
 

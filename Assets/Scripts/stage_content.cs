@@ -55,6 +55,8 @@ public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, M
 }
 [System.Serializable] public struct shoot_details
 {
+    public bool bullet_grow;
+    
     [Header("Spin")]
     public float spin_speed;
 
@@ -63,11 +65,12 @@ public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, M
 
     private bullet bullet;
 
-    public shoot_details(bullet b, float speed = 0.0f, int shotnum = 1)
+    public shoot_details(bullet b, bool grow, float speed = 0.0f, int shotnum = 1)
     {
         bullet = b;
         spin_speed = speed;
         shots = shotnum;
+        bullet_grow = grow;
     }
 }
 
@@ -97,6 +100,11 @@ public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, M
     public float delay_between_spawn;
     
     public float timestamp;
+
+    public bool prevent_spinning;
+    public bool is_final;
+
+    public float speed_mod;
     
     public item_details item_data;
     public EnemyShootType shot_type;
@@ -108,10 +116,10 @@ public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, M
     private bool has_spawned;
 
     public bool get_state(){return has_spawned;}
-    public spawn_event(string name, Vector3 pos, enemy e, int num, float interval, int items, bool bomb, bool life, float time, EnemyShootType shot, EnemyShootType subshot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
+    public spawn_event(string name, Vector3 pos, enemy e, int num, float interval, int items, bool bomb, bool life, float time, bool spin, EnemyShootType shot, EnemyShootType subshot, bullet bullet, float spinspeed, int shotnum, EnemyMoveType move,
         bool flip,  float paras, float paraw, float parah,
         float quadw, float quadstop,
-        float vstop,  float vwait)
+        float vstop,  float vwait, float smod, bool final, bool grow)
     {
         event_name = name;
         
@@ -122,6 +130,12 @@ public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, M
         delay_between_spawn = interval;
         
         timestamp = time;
+
+        prevent_spinning = spin;
+        is_final = final;
+
+        if (smod > 0.0f) speed_mod = smod;
+        else speed_mod = 1.0f;
         
         move_type = move;
         shot_type = shot;
@@ -134,13 +148,13 @@ public enum EnemyShootType {NONE, VERTICAL, PLAYER_FIXED, PLAYER_FOLLOW, SPIN, M
         switch (shot)
         {
             case EnemyShootType.VERTICAL: case EnemyShootType.PLAYER_FIXED: case EnemyShootType.PLAYER_FOLLOW:
-                shot_data = new shoot_details(bullet);
+                shot_data = new shoot_details(bullet, grow);
                 break;
             case EnemyShootType.SPIN:
-                shot_data = new shoot_details(bullet, spinspeed);
+                shot_data = new shoot_details(bullet, grow, spinspeed);
                 break;
             case EnemyShootType.MULTIPLE:
-                shot_data = new shoot_details(bullet, 0.0f, shotnum);
+                shot_data = new shoot_details(bullet, grow, 0.0f, shotnum);
                 break;
             default:
                 shot_data = new shoot_details();
@@ -181,6 +195,9 @@ public class stage_content : MonoBehaviour
     private List<bool> has_active_timer = new List<bool>();
 
     public UnityEvent next_stage;
+
+    private bool final_enemy_set = false;
+    private enemy final_enemy;
     
     void Start()
     {
@@ -232,12 +249,20 @@ public class stage_content : MonoBehaviour
                     new_enemy.shot_type = waves[i].shot_type;
                     new_enemy.sub_shot_type = waves[i].sub_shot_type;
                     new_enemy.shot_data = waves[i].shot_data;
+                    new_enemy.no_spin = waves[i].prevent_spinning;
+                    if(waves[i].speed_mod > 0.0f) new_enemy.speed += waves[i].speed_mod;
                     new_enemy.GetComponentInChildren<enemy_collide>().item_data = waves[i].item_data;
                     if (waves[i].shot_type == EnemyShootType.PLAYER_FIXED)
                         new_enemy.shot_target = player.transform.position;
 
                     StartCoroutine(start_spawn_timer(waves[i].delay_between_spawn, i));
                     num_spawned_from_event[i] += 1;
+
+                    if (waves[i].is_final)
+                    {
+                        final_enemy_set = true;
+                        final_enemy = new_enemy;
+                    }
                 }
             }
         }
@@ -248,16 +273,14 @@ public class stage_content : MonoBehaviour
         {
             if(player && (e.shot_type == EnemyShootType.PLAYER_FOLLOW || e.sub_shot_type == EnemyShootType.PLAYER_FOLLOW)) e.shot_target = player.transform.position;
         }
-        
-        //check for stage end
-        if (waves.Count != 0 && spawn_state[waves.Count - 1])
-        {
-            if (enemies.Length == 0) StartCoroutine(stage_transition());
-        }
+
+        //check for stage end - boss defeat
+        if (final_enemy_set && !final_enemy) StartCoroutine(stage_transition());
     }
     
     IEnumerator stage_transition()
     {
+        Debug.Log("STAGE TRANSITION");
         yield return new WaitForSeconds(2);
         next_stage.Invoke();
     }
