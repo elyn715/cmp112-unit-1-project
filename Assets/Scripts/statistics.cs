@@ -88,6 +88,10 @@ public class statistics : MonoBehaviour
         bombs_used = 0;
         enemies_defeated = 0;
         total_score = 0;
+        if(get_player()) get_player().lives = 3;
+        if(get_player()) get_player().bombs = 3;
+        current_player_lives = 3;
+        current_player_bombs = 3;
     }
 
     public void use_bomb()

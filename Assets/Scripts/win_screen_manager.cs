@@ -14,11 +14,11 @@ public class win_screen_manager : MonoBehaviour
     {
         if (Keyboard.current.enterKey.wasPressedThisFrame)
         {
-            //Move to title
-            SceneManager.LoadScene(0);
-            
             //Reset stats
             statistics.instance.reset();
+            
+            //Move to title
+            SceneManager.LoadScene(0);
         }
     }
 }
